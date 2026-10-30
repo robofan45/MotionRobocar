@@ -1,0 +1,10 @@
+name: motion_robocar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - scipy
+  - numpy
+  - cvxpy
+  - matplotlib
