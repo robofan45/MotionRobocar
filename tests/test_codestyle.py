@@ -134,10 +134,25 @@ def _inside_git_checkout():
     return res.returncode == 0 and res.stdout.strip() == "true"
 
 
+def _base_branch():
+    """The remote branch to compare against. This repository uses main;
+    origin/master is still accepted for older checkouts."""
+    for ref in ("origin/main", "origin/master"):
+        res = subprocess.run(["git", "rev-parse", "--verify", "--quiet", ref],
+                             cwd=ROOT_DIR, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+        if res.returncode == 0:
+            return ref
+    return None
+
+
 def test():
     if not _inside_git_checkout():
         pytest.skip("not a git checkout: this check compares against a branch")
-    branch_commit = find_branch_point("origin/master")
+    base = _base_branch()
+    if base is None:
+        pytest.skip("no origin/main or origin/master branch to compare against")
+    branch_commit = find_branch_point(base)
     files = diff_files(branch_commit)
     print(files)
     rc, errors = run_ruff(files, fix=True)

@@ -9,9 +9,11 @@ Owned and maintained by **Mahim Trivedi**.
 
 # Table of Contents
    * [What is this?](#what-is-motionrobocar)
+   * [How it works](#how-it-works)
    * [Requirements](#requirements-to-run-the-code)
    * [Documentation](#documentation-textbook)
    * [How to use](#how-to-use)
+   * [How testing works](#how-testing-works)
    * [Localization](#localization)
       * [Extended Kalman Filter localization](#extended-kalman-filter-localization)
       * [GPS/IMU Fusion Localization with Bias Estimation](#gpsimu-fusion-localization-with-bias-estimation)
@@ -86,6 +88,45 @@ See this documentation for more details:
 - [Getting Started — MotionRobocar documentation](docs/modules/0_getting_started/1_what_is_python_robotics_main.rst)
 
 
+# How it works
+
+A mobile robot runs the same loop many times a second: work out where it is,
+see what is around it, plan a path to the goal, and steer along that path.
+Each folder holds the algorithms for one part of that loop. Every demo runs on
+its own, so you can study one part at a time. The folders in the "Other robot
+types" box are separate examples that plan and control their own motion.
+
+```mermaid
+flowchart TD
+    S["Sensors<br/>GPS, IMU, wheel odometry,<br/>lidar, landmark distances"]
+    MP["MissionPlanning/<br/>what to do next<br/>(state machine,<br/>behavior tree)"]
+    L["Localization/<br/>where am I?"]
+    M["Mapping/<br/>what is around me?"]
+    SL["SLAM/<br/>map and position,<br/>built together"]
+    P["PathPlanning/<br/>how do I reach the goal?"]
+    T["PathTracking/<br/>steer and drive<br/>along the path"]
+    R["Robot moves,<br/>then the loop repeats"]
+    S --> L
+    S --> M
+    S --> SL
+    MP -->|"goal"| P
+    L -->|"position"| P
+    M -->|"map"| P
+    SL -->|"position and map"| P
+    P -->|"path"| T
+    L -->|"position"| T
+    T -->|"steering and speed"| R
+    R ~~~ OTHER
+    subgraph OTHER ["Other robot types (separate examples)"]
+        direction TB
+        ARM["ArmNavigation/<br/>robot arms"]
+        AIR["AerialNavigation/<br/>drones and rockets"]
+        BI["Bipedal/<br/>walking robots"]
+        IP["InvertedPendulum/<br/>balancing a pole<br/>on a cart"]
+    end
+```
+
+
 # Requirements to run the code
 
 For running each sample code:
@@ -144,7 +185,45 @@ You can check the full documentation (textbook) in the docs folder: [Welcome to 
 
 4. Add star to this repo if you like it :smiley:. 
 
+# How testing works
+
+Every algorithm has a test in the `tests` folder. Run them all with
+`bash runtests.sh`, or `pytest tests -Werror` on Windows. The tests do more
+than run each demo: they check that the answers are right.
+
+```mermaid
+flowchart LR
+    RUN["runtests.sh<br/>pytest, where every<br/>warning is an error"]
+    RUN --> DEMO["Run each demo's main()<br/>with plotting<br/>switched off"]
+    RUN --> GRID
+    RUN --> PATHS
+    RUN --> BUGS
+    RUN --> MORE["More checks<br/>test_reproducibility.py<br/>(fixed random seeds)<br/>test_readme.py<br/>(links and diagrams)<br/>test_codestyle.py<br/>test_mypy_type_check.py<br/>(style and types)"]
+    subgraph ANS ["Check the answers"]
+        GRID["grid_planner_checks.py<br/>A* and Dijkstra against<br/>an independent<br/>shortest-path solver<br/>on random maps"]
+        PATHS["path_checks.py<br/>sampling and curve<br/>planners reach the goal<br/>and avoid obstacles"]
+        BUGS["Known bugs in older<br/>algorithms: strict xfail,<br/>so a fix gets noticed"]
+    end
+    GRID -.->|"same reference solver"| SIM["simulate_users.py<br/>run by hand: thousands<br/>of simulated users,<br/>good and bad requests,<br/>every answer checked"]
+```
+
 # Localization
+
+How it works: every filter repeats the same predict and update loop.
+
+```mermaid
+flowchart LR
+    U["Motion input<br/>speed and turn rate,<br/>or IMU readings"] --> PRED["Predict<br/>move the estimate with<br/>a motion model"]
+    PRED --> UPD["Update<br/>correct it with<br/>a measurement"]
+    Z["Measurements<br/>GPS position or<br/>distances to landmarks"] --> UPD
+    UPD --> EST["Estimated position<br/>and how sure it is"]
+    EST -->|"next time step"| PRED
+```
+
+The filters differ in how they store the estimate. The Extended Kalman Filter
+and GPS/IMU fusion keep one Gaussian (a mean and a covariance), the particle
+filter keeps many weighted guesses and resamples them, and the histogram filter
+keeps a probability for every grid cell.
 
 ## Extended Kalman Filter localization
 
@@ -202,6 +281,18 @@ Reference
 
 # Mapping
 
+How it works: raw sensor points become either a grid map or a list of objects.
+
+```mermaid
+flowchart LR
+    SCAN["Sensor points<br/>lidar or range scan"] --> GRID["Grid map<br/>Gaussian grid map,<br/>ray casting,<br/>lidar to grid map"]
+    SCAN --> KM["Group the points<br/>k-means clustering"]
+    SCAN --> RECT["Split the scan into<br/>segments, fit a box<br/>to each one<br/>rectangle fitting"]
+    GRID --> G2["Which cells are free,<br/>blocked or unknown"]
+    KM --> K2["Which points belong<br/>to which object"]
+    RECT --> R2["Vehicle outlines:<br/>position, size, heading"]
+```
+
 ## Gaussian grid map
 
 This is a 2D Gaussian grid mapping example.
@@ -225,6 +316,30 @@ This is a 2D rectangle fitting for vehicle detection.
 # SLAM
 
 Simultaneous Localization and Mapping(SLAM) examples
+
+How it works: the robot estimates its own path and the map at the same time.
+
+```mermaid
+flowchart TD
+    subgraph FS ["FastSLAM 1.0: build a landmark map"]
+        direction TB
+        ODO["Odometry<br/>speed and turn rate"] --> PRED["Each particle guesses<br/>a new robot pose"]
+        PRED --> SEEN{"Seen this<br/>landmark before?"}
+        OBS["Landmark observed<br/>distance and angle"] --> SEEN
+        SEEN -->|"yes"| UPD["Refine the landmark's<br/>position and weight<br/>the particle"]
+        SEEN -->|"no"| ADD["Add the landmark<br/>to the particle's map"]
+        UPD --> RES["Resample when needed:<br/>copy good particles,<br/>drop poor ones"]
+        ADD --> RES
+        RES -->|"next time step"| PRED
+    end
+    subgraph ICP ["ICP matching: line up two scans"]
+        direction TB
+        A["Two point clouds"] --> PAIR["Pair each point with<br/>its nearest neighbour"]
+        PAIR --> SVD["Best rotation and shift<br/>(singular value<br/>decomposition)"]
+        SVD --> MOVE["Move the points"]
+        MOVE -->|"until the error<br/>stops shrinking"| PAIR
+    end
+```
 
 ## Iterative Closest Point (ICP) Matching
 
@@ -256,6 +371,28 @@ Reference
 
 
 # Path Planning
+
+How it works: every planner turns a map, a start and a goal into a path.
+
+```mermaid
+flowchart TD
+    IN["Map with obstacles,<br/>start and goal"] --> PICK{"Planner family"}
+    PICK -->|"grid map"| GRID["Grid based search<br/>Dijkstra, A*, D*,<br/>D* Lite, potential field,<br/>coverage, PSO"]
+    PICK -->|"open space"| SAMP["Sampling based<br/>PRM, RRT*,<br/>RRT* with Reeds-Shepp,<br/>LQR-RRT*"]
+    PICK -->|"smooth, drivable curve"| CURVE["Curves and trajectories<br/>state lattice,<br/>quintic polynomials,<br/>Reeds-Shepp, LQR planner"]
+    PICK -->|"react while driving"| LOCAL["Local planners<br/>Dynamic Window Approach,<br/>Frenet optimal trajectory"]
+    GRID --> OUT["Path: x, y points<br/>(some planners also<br/>give heading and speed)"]
+    SAMP --> OUT
+    CURVE --> OUT
+    LOCAL --> OUT
+    OUT --> NEXT["Path Tracking follows it"]
+```
+
+Grid based search works on a map of cells: Dijkstra and A* spread out cell by
+cell from the start until they reach the goal. Sampling based planners scatter
+random points and connect the ones with a clear line between them. Curve planners solve for a smooth path the vehicle can
+actually drive. Local planners try many short moves every time step and keep
+the best one.
 
 ## Dynamic Window Approach
 
@@ -442,6 +579,17 @@ Reference
 
 # Path Tracking
 
+How it works: a feedback loop keeps the vehicle on the path.
+
+```mermaid
+flowchart TD
+    REF["Target<br/>a path with speeds,<br/>or a goal pose"] --> ERR["Tracking error<br/>distance from the path,<br/>heading and speed error"]
+    STATE["Vehicle state<br/>position, heading, speed"] --> ERR
+    ERR --> CTRL["Controller<br/>move to a pose, Stanley,<br/>rear wheel feedback,<br/>LQR, MPC,<br/>NMPC (C-GMRES)"]
+    CTRL -->|"steering and<br/>speed commands"| SIM["Vehicle model<br/>moves one time step"]
+    SIM -->|"new state"| STATE
+```
+
 ## move to a pose control
 
 This is a simulation of moving to a pose control
@@ -502,6 +650,18 @@ Reference
 
 # Arm Navigation
 
+How it works: turn a target point for the gripper into joint angles.
+
+```mermaid
+flowchart TD
+    GOAL["Target point for<br/>the gripper<br/>(end effector)"]
+    GOAL -->|"N joint arm<br/>to point control"| IK["Inverse kinematics<br/>Jacobian steps find<br/>the joint angles that put<br/>the gripper on the target"]
+    IK --> MOVE["Each joint turns toward<br/>its new angle<br/>(proportional control)"]
+    GOAL -->|"obstacle avoidance"| CS["Grid of every pair<br/>of joint angles, marking<br/>the pairs where the arm<br/>hits an obstacle"]
+    CS --> ASTAR["A* search on that grid<br/>(angles wrap around)"]
+    ASTAR --> ROUTE["Arm follows the<br/>collision-free sequence<br/>of joint angles"]
+```
+
 ## N joint arm to point control
 
 N joint arm to a point control simulation.
@@ -518,6 +678,27 @@ Arm navigation with obstacle avoidance simulation.
 
 # Aerial Navigation
 
+How it works: plan a trajectory, then fly it (drone) or optimise it (rocket).
+
+```mermaid
+flowchart TD
+    subgraph DRONE ["drone 3d trajectory following"]
+        direction TB
+        WP["Waypoints"] --> TRAJ["Quintic polynomial<br/>trajectory between<br/>waypoints"]
+        TRAJ --> CTRL["Controller<br/>thrust and body torques"]
+        CTRL --> QUAD["Quadrotor model<br/>moves one time step"]
+        QUAD -->|"position and<br/>attitude"| CTRL
+    end
+    subgraph ROCKET ["rocket powered landing"]
+        direction TB
+        GUESS["First guess of the<br/>landing trajectory"] --> LIN["Linearise the rocket<br/>dynamics around<br/>the current guess"]
+        LIN --> CVX["Solve a convex problem<br/>(cvxpy) for a better<br/>trajectory"]
+        CVX --> DONE{"Converged?"}
+        DONE -->|"no"| LIN
+        DONE -->|"yes"| LAND["Landing trajectory<br/>within thrust and<br/>tilt limits"]
+    end
+```
+
 ## drone 3d trajectory following 
 
 This is a 3d trajectory following simulation for a quadrotor.
@@ -531,6 +712,17 @@ Reference
 - [documentation](docs/modules/8_aerial_navigation/rocket_powered_landing/rocket_powered_landing_main.rst)
 
 # Bipedal
+
+How it works: the walking body is modelled as an inverted pendulum.
+
+```mermaid
+flowchart TD
+    REF["Footsteps you choose"] --> LIPM["Linear inverted pendulum<br/>body = a point mass kept<br/>at a constant height"]
+    LIPM --> STEP["Predict the body's motion<br/>during one step"]
+    STEP --> MOD["Shift the next<br/>footstep so the body<br/>ends the step<br/>where it should"]
+    MOD -->|"next step"| LIPM
+    MOD --> OUT["Body path and<br/>adjusted footsteps"]
+```
 
 ## bipedal planner with inverted pendulum
 
