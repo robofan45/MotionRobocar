@@ -190,6 +190,7 @@ def main():
     assert last_idx >= target_idx, "Cannot reach goal"
 
     if show_animation:  # pragma: no cover
+        plt.cla()  # start the summary from a clean plot (one legend entry each)
         plt.plot(cx, cy, ".r", label="course")
         plt.plot(x, y, "-b", label="trajectory")
         plt.legend()

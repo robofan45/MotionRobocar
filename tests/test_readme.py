@@ -25,8 +25,9 @@ SECTIONS_WITH_DIAGRAMS = OVERVIEW_SECTIONS + ALGORITHM_SECTIONS
 # demo GIFs (made by utils/make_demo_gifs.py)
 GIF_DIR = ROOT / "gifs"
 GIF_LINK = re.compile(r"!\[([^\]]*)\]\((gifs/[\w.-]+\.gif)\)")
-MAX_GIF_MB = 2.0      # per GIF, so the README stays quick to load
-MAX_ALL_GIFS_MB = 45.0
+MAX_GIF_MB = 5.0      # per GIF (sharp, smooth GIFs; agreed size limit)
+MAX_ALL_GIFS_MB = 120.0
+MIN_GIF_PX = 600      # the longer side, so axis labels stay readable
 
 
 def _github_slug(heading):
@@ -166,6 +167,8 @@ def test_gifs_are_small_animations():
         with Image.open(path) as im:
             if im.format != "GIF" or getattr(im, "n_frames", 1) < 2:
                 problems.append(f"{path.name}: not an animated GIF")
+            if max(im.size) < MIN_GIF_PX:
+                problems.append(f"{path.name}: only {im.size} pixels")
         if path.stat().st_size > MAX_GIF_MB * 1e6:
             problems.append(f"{path.name}: over {MAX_GIF_MB} MB")
     total = sum(p.stat().st_size for p in paths) / 1e6

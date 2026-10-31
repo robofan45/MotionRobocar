@@ -42,5 +42,21 @@ def test1(monkeypatch):
     assert max(v) == pytest.approx(TARGET_SPEED, rel=0.01)
 
 
+
+def test_final_plot_lists_each_line_once(monkeypatch):
+    """With the animation on, the finished plot's legend used to repeat
+    'course' and 'trajectory' (left over from the last animation frame)."""
+    import matplotlib.pyplot as plt
+    monkeypatch.setattr(plt, "pause", lambda *args, **kwargs: None)
+    monkeypatch.setattr(plt, "show", lambda *args, **kwargs: None)
+    monkeypatch.setattr(m, "show_animation", True)
+    try:
+        m.main()
+        legend = plt.figure(1).axes[0].get_legend()
+        labels = [text.get_text() for text in legend.get_texts()]
+    finally:
+        plt.close("all")
+    assert sorted(labels) == ["course", "trajectory"]
+
 if __name__ == '__main__':
     conftest.run_this_test(__file__)

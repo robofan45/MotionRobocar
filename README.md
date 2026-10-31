@@ -523,7 +523,7 @@ Reference
 
 ![Coverage path planning demo](gifs/coverage_path_planning.gif)
 
-**How it works:** The area inside the polygon (blue) is turned into a grid and swept in back-and-forth lanes, like mowing a lawn, so every free cell is visited once. Red line: the sweep path. Red dot: the robot.
+**How it works:** The area inside the polygon (blue) is turned into a grid and swept in back-and-forth lanes, like mowing a lawn, so every free cell is visited once. Red line: the sweep path. Red dot: the robot. The GIF shows three example areas.
 
 This is a 2D grid based coverage path planning simulation.
 

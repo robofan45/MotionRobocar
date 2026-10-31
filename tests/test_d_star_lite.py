@@ -94,5 +94,23 @@ def test_demo_is_reproducible(demo):
     assert random.getstate() == state
 
 
+
+def test_legend_fits_in_the_window(monkeypatch):
+    """The 'Key:' legend sits right of the map; it used to be cut off at
+    the window's edge."""
+    import matplotlib.pyplot as plt
+    monkeypatch.setattr(plt, "pause", lambda *args, **kwargs: None)
+    monkeypatch.setattr(m, "show_animation", True)
+    try:
+        m.main()
+        fig = plt.gcf()
+        fig.canvas.draw()
+        legend = fig.axes[0].get_legend().get_window_extent()
+        window = fig.bbox
+    finally:
+        plt.close("all")
+    assert legend.x0 >= window.x0 and legend.x1 <= window.x1
+    assert legend.y0 >= window.y0 and legend.y1 <= window.y1
+
 if __name__ == '__main__':
     conftest.run_this_test(__file__)

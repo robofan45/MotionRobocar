@@ -372,8 +372,9 @@ def main():
                                                  ['.', 'c', 1],
                                                  ['.', 'c', 0.3],
                                                  ['.', 'k', 1]]]
-        plt.legend(columns, label_column, bbox_to_anchor=(1, 1), title="Key:",
-                   fontsize="xx-small")
+        plt.legend(columns, label_column, loc="upper left",
+                   bbox_to_anchor=(1.01, 1), title="Key:", fontsize="xx-small")
+        plt.gcf().subplots_adjust(right=0.75)  # room for the key on the right
         plt.plot()
         plt.pause(pause_time)
 
