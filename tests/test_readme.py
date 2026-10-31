@@ -17,9 +17,16 @@ README = ROOT / "README.md"
 
 # overview diagrams: they name real folders (Name/) and files (name.py)
 OVERVIEW_SECTIONS = ["How it works", "How testing works"]
-SECTIONS_WITH_DIAGRAMS = OVERVIEW_SECTIONS + [
+ALGORITHM_SECTIONS = [
     "Localization", "Mapping", "SLAM", "Path Planning", "Path Tracking",
     "Arm Navigation", "Aerial Navigation", "Bipedal"]
+SECTIONS_WITH_DIAGRAMS = OVERVIEW_SECTIONS + ALGORITHM_SECTIONS
+
+# demo GIFs (made by utils/make_demo_gifs.py)
+GIF_DIR = ROOT / "gifs"
+GIF_LINK = re.compile(r"!\[([^\]]*)\]\((gifs/[\w.-]+\.gif)\)")
+MAX_GIF_MB = 2.0      # per GIF, so the README stays quick to load
+MAX_ALL_GIFS_MB = 45.0
 
 
 def _github_slug(heading):
@@ -120,6 +127,60 @@ def test_overview_diagrams_name_real_folders_and_files():
             missing += [f for f in files if not any(ROOT.rglob(f))]
     assert named, "overview diagrams should name the folders and files"
     assert not missing, f"diagrams name things that do not exist: {missing}"
+
+
+def _entries(section_text):
+    """(heading, text up to the next heading) for each ## / ### heading."""
+    parts = re.split(r"^(#{2,3} .+?)\s*$", section_text, flags=re.MULTILINE)
+    return [(h.lstrip("#").strip(), body)
+            for h, body in zip(parts[1::2], parts[2::2])]
+
+
+def test_every_algorithm_entry_shows_a_demo_gif():
+    sections = _top_level_sections(README.read_text(encoding="utf-8"))
+    missing = []
+    for name in ALGORITHM_SECTIONS:
+        for heading, body in _entries(sections[name]):
+            if not body.strip():
+                continue  # a group heading such as "Grid based search"
+            links = GIF_LINK.findall(body)
+            if not links or not all(alt.strip() for alt, _ in links):
+                missing.append(heading)
+    assert not missing, f"entries without a demo GIF (with alt text): {missing}"
+
+
+def test_gif_folder_matches_the_readme():
+    linked = {path for _, path in GIF_LINK.findall(
+        README.read_text(encoding="utf-8"))}
+    on_disk = {f"gifs/{p.name}" for p in GIF_DIR.glob("*.gif")}
+    assert linked == on_disk, (f"linked but missing: {sorted(linked - on_disk)}"
+                               f", not linked: {sorted(on_disk - linked)}")
+
+
+def test_gifs_are_small_animations():
+    from PIL import Image
+    paths = sorted(GIF_DIR.glob("*.gif"))
+    assert paths, "no demo GIFs found"
+    problems = []
+    for path in paths:
+        with Image.open(path) as im:
+            if im.format != "GIF" or getattr(im, "n_frames", 1) < 2:
+                problems.append(f"{path.name}: not an animated GIF")
+        if path.stat().st_size > MAX_GIF_MB * 1e6:
+            problems.append(f"{path.name}: over {MAX_GIF_MB} MB")
+    total = sum(p.stat().st_size for p in paths) / 1e6
+    if total > MAX_ALL_GIFS_MB:
+        problems.append(f"all GIFs together: {total:.1f} MB")
+    assert not problems, "\n".join(problems)
+
+
+def test_gitignore_does_not_drop_the_demo_gifs():
+    """.gitignore ignores *.gif (demo output); the README GIFs must be kept."""
+    lines = [ln.strip() for ln in
+             (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()]
+    if "*.gif" in lines:
+        assert "!gifs/*.gif" in lines[lines.index("*.gif"):], \
+            "add '!gifs/*.gif' after '*.gif' in .gitignore"
 
 
 if __name__ == '__main__':

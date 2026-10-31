@@ -7,7 +7,7 @@ from math import cos, sin
 import numpy as np
 import matplotlib.pyplot as plt
 
-class Quadrotor():
+class Quadrotor:
     def __init__(self, x=0, y=0, z=0, roll=0, pitch=0, yaw=0, size=0.25, show_animation=True):
         self.p1 = np.array([size / 2, 0, 0, 1]).T
         self.p2 = np.array([-size / 2, 0, 0, 1]).T
@@ -31,6 +31,9 @@ class Quadrotor():
         self.update_pose(x, y, z, roll, pitch, yaw)
 
     def update_pose(self, x, y, z, roll, pitch, yaw):
+        # the simulation can pass 1-element arrays; math.cos/sin need floats
+        x, y, z, roll, pitch, yaw = (float(np.asarray(v).item())
+                                     for v in (x, y, z, roll, pitch, yaw))
         self.x = x
         self.y = y
         self.z = z

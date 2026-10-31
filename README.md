@@ -207,6 +207,10 @@ flowchart LR
     GRID -.->|"same reference solver"| SIM["simulate_users.py<br/>run by hand: thousands<br/>of simulated users,<br/>good and bad requests,<br/>every answer checked"]
 ```
 
+The demo GIFs in this README are made by `python utils/make_demo_gifs.py`. It
+runs every demo with its animation switched on, so it also catches plotting
+errors that the tests miss, because the tests switch plotting off.
+
 # Localization
 
 How it works: every filter repeats the same predict and update loop.
@@ -227,11 +231,19 @@ keeps a probability for every grid cell.
 
 ## Extended Kalman Filter localization
 
+![Extended Kalman Filter localization demo](gifs/extended_kalman_filter.gif)
+
+**How it works:** Every time step the filter predicts where the robot has moved from its speed and turn rate, then corrects that guess with a noisy GPS-like position fix, trusting each in proportion to how certain it is. Blue line: true path. Black line: dead reckoning (odometry only, it drifts). Red line: EKF estimate. Green dots: GPS fixes. Red ellipse: how uncertain the estimate is.
+
 Reference
 
 - [documentation](docs/modules/2_localization/extended_kalman_filter_localization_files/extended_kalman_filter_localization_main.rst)
 
 ## GPS/IMU Fusion Localization with Bias Estimation
+
+![GPS/IMU fusion demo](gifs/gps_imu_fusion.gif)
+
+**How it works:** The accelerometer and gyroscope drive the prediction many times a second, and each GPS fix corrects both the position and the filter's estimate of the sensors' small constant errors (biases). In the grey band GPS is missing, so the filter runs on the IMU alone and its uncertainty grows until GPS returns.
 
 An extended Kalman filter fuses body-frame accelerometer and gyroscope readings
 with lower-rate GPS positions, estimates sensor biases, and continues inertial
@@ -245,6 +257,10 @@ bias uncertainty bands.
 - [sample code](Localization/gps_imu_fusion/gps_imu_fusion.py)
 
 ## Particle filter localization
+
+![Particle filter localization demo](gifs/particle_filter.gif)
+
+**How it works:** The filter keeps many guesses of the robot's position (particles). Each step every particle moves with the odometry plus random noise, is weighted by how well it explains the measured distances to the landmarks, and the particles are resampled when the weights get uneven, so good guesses multiply. Red dots: particles. Black stars: landmarks; black lines: the distance measurements.
 
 This is a sensor fusion localization with Particle Filter(PF).
 
@@ -262,6 +278,10 @@ Reference
 
 
 ## Histogram filter localization
+
+![Histogram filter localization demo](gifs/histogram_filter.gif)
+
+**How it works:** The map is split into grid cells, each holding the probability that the robot is there. Each step the probabilities are shifted by the measured motion and blurred by its noise, then multiplied by how well each cell matches the measured distances to the landmarks.
 
 This is a 2D localization example with Histogram filter.
 
@@ -295,21 +315,41 @@ flowchart LR
 
 ## Gaussian grid map
 
+![Gaussian grid map demo](gifs/gaussian_grid_map.gif)
+
+**How it works:** Each cell's chance of being blocked comes from its distance to the nearest obstacle point, passed through a Gaussian: cells close to an obstacle are dark blue and fade to white further away. Red crosses: obstacle points. Blue dot: the robot. The demo repeats with new random obstacles.
+
 This is a 2D Gaussian grid mapping example.
 
 ## Ray casting grid map
+
+![Ray casting grid map demo](gifs/ray_casting_grid_map.gif)
+
+**How it works:** Rays are cast from the robot (blue dot) in small angle steps. On each ray, the first obstacle point (red cross) marks a blocked cell, and every cell behind it is hidden from the sensor, so it is shaded as unknown. White cells are free space the sensor can see.
 
 This is a 2D ray casting grid mapping example.
 
 ## Lidar to grid map
 
+![Lidar to grid map demo](gifs/lidar_to_grid_map.gif)
+
+**How it works:** Each lidar beam is a line from the sensor to the point it hit. Cells along a beam are free, the cell at its end is occupied, and cells that no beam reaches stay unknown. Left: the beams (red) from the sensor (blue dot). Right: the grid map (green: free, pink: occupied, white: unknown).
+
 This example shows how to convert a 2D range measurement to a grid map.
 
 ## k-means object clustering
 
+![k-means clustering demo](gifs/kmeans_clustering.gif)
+
+**How it works:** k-means places k cluster centres, assigns every point to its nearest centre, moves each centre to the mean of its points, and repeats until nothing changes. Here it follows two moving objects: dots are the measured points, coloured by cluster, and red circles are the centres.
+
 This is a 2D object clustering with k-means algorithm.
 
 ## Rectangle fitting
+
+![Rectangle fitting demo](gifs/rectangle_fitting.gif)
+
+**How it works:** The scan is split into groups of nearby points; for each group the fitter tries many rotation angles and keeps the box whose sides fit the points best (an L-shape fit). Green lines: lidar beams from the sensor at the origin. Blue dashed boxes: the true vehicles. Red boxes: the fitted rectangles.
 
 This is a 2D rectangle fitting for vehicle detection.
 
@@ -343,6 +383,10 @@ flowchart TD
 
 ## Iterative Closest Point (ICP) Matching
 
+![ICP matching demo](gifs/icp_matching.gif)
+
+**How it works:** ICP lines up two point clouds: it pairs each point with its nearest neighbour in the other cloud, solves for the rotation and shift that best fit those pairs, moves the points, and repeats until the error stops shrinking. Red dots: the reference scan. Blue dots: the scan being moved into place, which ends up covering the red one.
+
 This is a 2D ICP matching example with singular value decomposition.
 
 It can calculate a rotation matrix, and a translation vector between points and points.
@@ -353,6 +397,10 @@ Reference
 
 
 ## FastSLAM 1.0
+
+![FastSLAM 1.0 demo](gifs/fast_slam1.gif)
+
+**How it works:** Each particle is one guess of the robot's path and carries its own small Kalman filter for every landmark it has seen. Particles move with the odometry, are weighted by how well their landmark map explains each new observation, and are resampled when needed.
 
 This is a feature based SLAM example using FastSLAM 1.0.
 
@@ -396,6 +444,10 @@ the best one.
 
 ## Dynamic Window Approach
 
+![Dynamic Window Approach demo](gifs/dynamic_window_approach.gif)
+
+**How it works:** Every step the planner tries many speed and turn-rate pairs the robot can reach within one control cycle (the dynamic window), simulates each for a short time, and picks the one that best heads for the goal, keeps clear of obstacles and stays fast. Black dots: obstacles. Blue cross: goal. Green line: the chosen short trajectory. Red line: the path driven.
+
 This is a 2D navigation sample code with Dynamic Window Approach.
 
 - The Dynamic Window Approach to Collision Avoidance
@@ -404,11 +456,19 @@ This is a 2D navigation sample code with Dynamic Window Approach.
 
 ### Dijkstra algorithm
 
+![Dijkstra search demo](gifs/dijkstra.gif)
+
+**How it works:** Dijkstra always expands the cheapest cell found so far (kept in a priority queue), so the search spreads evenly in every direction until it reaches the goal; the path is then traced back through each cell's parent. Black dots: walls. Red line: the shortest path.
+
 This is a 2D grid based the shortest path planning with Dijkstra's algorithm.
 
 In the animation, cyan points are searched nodes.
 
 ### A\* algorithm
+
+![A* search demo](gifs/a_star.gif)
+
+**How it works:** A* expands the cell with the lowest cost so far plus the straight-line distance still left to the goal, so the search leans toward the goal and visits far fewer cells than Dijkstra, yet still finds the shortest path. Black dots: walls. Green dot: start. Blue cross: goal. Red line: the path.
 
 This is a 2D grid based the shortest path planning with A star algorithm.
 
@@ -417,6 +477,10 @@ In the animation, cyan points are searched nodes.
 Its heuristic is 2D Euclid distance.
 
 ### D\* algorithm
+
+![D* replanning demo](gifs/d_star.gif)
+
+**How it works:** D* plans backwards from the goal and stores every cell's cost to reach it. When the robot finds a new obstacle on its way (green dots), only the costs it affects are repaired, and the robot carries on along a new path (red) without planning from scratch.
 
 This is a 2D grid based the shortest path planning with D star algorithm.
 
@@ -427,6 +491,10 @@ Reference
 - [D* Algorithm Wikipedia](https://en.wikipedia.org/wiki/D*)
 
 ### D\* Lite algorithm
+
+![D* Lite replanning demo](gifs/d_star_lite.gif)
+
+**How it works:** Like D*, D* Lite plans backwards from the goal and, when the robot discovers an obstacle, repairs only the part of the plan that the obstacle changes, so replanning while moving stays fast.
 
 This algorithm finds the shortest path between two points while rerouting when obstacles are discovered. It has been implemented here for a 2D grid.
 
@@ -439,6 +507,10 @@ Refs:
 
 ### Potential Field algorithm
 
+![Potential field planning demo](gifs/potential_field.gif)
+
+**How it works:** The goal pulls the robot and every obstacle pushes it away; adding the two gives a potential value for every cell. The robot keeps stepping to the neighbouring cell with the lowest potential, like a ball rolling downhill. Black star: start. Magenta star: goal. Red dots: the path.
+
 This is a 2D grid based path planning with Potential Field algorithm.
 
 In the animation, the blue heat map shows potential value on each grid.
@@ -449,9 +521,17 @@ Reference
 
 ### Grid based coverage path planning
 
+![Coverage path planning demo](gifs/coverage_path_planning.gif)
+
+**How it works:** The area inside the polygon (blue) is turned into a grid and swept in back-and-forth lanes, like mowing a lawn, so every free cell is visited once. Red line: the sweep path. Red dot: the robot.
+
 This is a 2D grid based coverage path planning simulation.
 
 ### Particle Swarm Optimization (PSO)
+
+![Particle swarm optimization demo](gifs/particle_swarm_optimization.gif)
+
+**How it works:** Each particle flies through the map. Every iteration it turns partly toward the best spot it has found itself and partly toward the best spot the whole swarm has found, where best means close to the goal without hitting an obstacle. The swarm's best positions over time join up into the path.
 
 This is a 2D path planning simulation using the Particle Swarm Optimization algorithm.
 
@@ -469,6 +549,10 @@ References
 
 ## State Lattice Planning
 
+![State lattice planning demo](gifs/state_lattice_uniform.gif)
+
+**How it works:** The planner picks target states (position and heading) spread evenly ahead of the vehicle and, for each one, solves for a smooth trajectory the vehicle can drive to reach it exactly. Together the trajectories (red) form a lattice of options to choose from.
+
 This script is a path planning code with state lattice planning.
 
 This code uses the model predictive trajectory generator to solve boundary problem.
@@ -482,19 +566,31 @@ Reference
 
 ### Biased polar sampling
 
+![State lattice biased sampling demo](gifs/state_lattice_biased.gif)
+
+**How it works:** Same trajectory generator, but more target states are placed around the goal direction, so there are more options where they matter.
+
 Target states are sampled on a polar grid, more densely around the goal direction.
 
 ### Lane sampling
+
+![State lattice lane sampling demo](gifs/state_lattice_lane.gif)
+
+**How it works:** The target states are spread across the lane at a set distance ahead, all pointing along the lane, so the trajectories show the ways to move across to a new position in the lane.
 
 Target states are sampled across the width of a lane ahead of the vehicle.
 
 ## Probabilistic Road-Map (PRM) planning 
 
+![Probabilistic roadmap demo](gifs/probabilistic_road_map.gif)
+
+**How it works:** Random points are scattered over the free space and each is joined to its nearest neighbours when the straight line between them is clear; this graph is the roadmap. Dijkstra then searches the roadmap from the start to the goal.
+
 This PRM planner uses Dijkstra method for graph search.
 
 In the animation, blue points are sampled points,
 
-Cyan crosses means searched points with Dijkstra method,
+Green crosses are the points searched with the Dijkstra method,
 
 The red line is the final path of PRM.
 
@@ -508,9 +604,13 @@ Reference
 
 ### RRT\*
 
+![RRT* demo](gifs/rrt_star.gif)
+
+**How it works:** RRT grows a tree from the start by picking random points and extending the nearest branch toward them. RRT* also rewires: each new node picks the parent that gives it the shortest path, and nearby nodes switch to it when that shortens theirs, so the path keeps improving as the tree grows.
+
 This is a path planning code with RRT\*
 
-Black circles are obstacles, green line is a searched tree, red crosses are start and goal positions.
+Blue circles are obstacles, green lines are the search tree, red crosses are the start and goal, and the red dashed line is the final path.
 
 Reference
 
@@ -520,9 +620,17 @@ Reference
 
 ### RRT\* with reeds-shepp path
 
+![RRT* with Reeds-Shepp paths demo](gifs/rrt_star_reeds_shepp.gif)
+
+**How it works:** The same RRT* search, but each node is a car pose (position and heading) and each branch is a Reeds-Shepp curve, which a car can drive forwards and backwards with a limited turning radius. Black circles: obstacles. Green: the tree. Red: the final path.
+
 Path planning for a car robot with RRT\* and reeds shepp path planner.
 
 ### LQR-RRT\*
+
+![LQR-RRT* demo](gifs/lqr_rrt_star.gif)
+
+**How it works:** RRT* again, but every branch is made by an LQR controller steering a double-integrator model toward the new point, so the branches follow the system's dynamics. Black circles: obstacles. Green: the tree. Red: the final path.
 
 This is a path planning simulation with LQR-RRT\*.
 
@@ -537,6 +645,10 @@ Reference
 
 ## Quintic polynomials planning
 
+![Quintic polynomial planning demo](gifs/quintic_polynomials.gif)
+
+**How it works:** x(t) and y(t) are each a fifth-order polynomial whose six coefficients come from the start and goal position, speed and acceleration. The planner tries longer and longer travel times and keeps the first one whose acceleration and jerk stay within limits; the arrow then drives along the red path.
+
 Motion planning with quintic polynomials.
 
 It can calculate a 2D path, velocity, and acceleration profile based on quintic polynomials.
@@ -546,6 +658,10 @@ Reference
 - [Local Path Planning And Motion Control For Agv In Positioning](https://ieeexplore.ieee.org/document/637936/)
 
 ## Reeds Shepp planning
+
+![Reeds-Shepp path demo](gifs/reeds_shepp_path.gif)
+
+**How it works:** A car that can drive forwards and backwards with a minimum turning radius goes from the start pose to the goal pose (arrows). Every Reeds-Shepp path is a short sequence of left turns (L), right turns (R) and straight pieces (S); the planner checks all the patterns and keeps the shortest. The legend shows the pattern it chose.
 
 A sample code with Reeds Shepp path planning.
 
@@ -560,15 +676,23 @@ Reference
 
 ## LQR based path planning
 
+![LQR path planning demo](gifs/lqr_planner.gif)
+
+**How it works:** The path is found by simulating an LQR controller that drives a double-integrator model (position and velocity in x and y) from the start (red dot) to a goal (blue dot); the red line is the result. The demo plans to ten random goals.
+
 A sample code using LQR based path planning for double integrator model.
 
 ## Optimal Trajectory in a Frenet Frame 
 
+![Frenet optimal trajectory demo](gifs/frenet_optimal_trajectory.gif)
+
+**How it works:** Positions are measured along the road and across it. Every step the planner samples many sideways and speed profiles (polynomials), turns each into a trajectory, drops those that hit an obstacle or break the speed, acceleration or curvature limits, and drives the cheapest one left.
+
 This is optimal trajectory generation in a Frenet Frame.
 
-The cyan line is the target course and black crosses are obstacles.
+The blue line is the target course and black crosses are obstacles.
 
-The red line is the predicted path.
+The red line is the chosen trajectory, and the cyan triangle is the vehicle.
 
 Reference
 
@@ -592,6 +716,10 @@ flowchart TD
 
 ## move to a pose control
 
+![Move to a pose demo](gifs/move_to_pose.gif)
+
+**How it works:** The controller looks at the distance to the goal and two angles (toward the goal, and the goal's own heading) and sets the speed and turn rate from them, so the robot arrives pointing the right way. Red arrow: start. Green arrow: goal. Black triangle: the robot. Blue dashed line: its path. The demo runs five random start and goal poses.
+
 This is a simulation of moving to a pose control
 
 Reference
@@ -600,6 +728,10 @@ Reference
 
 
 ## Stanley control
+
+![Stanley control demo](gifs/stanley_control.gif)
+
+**How it works:** Stanley steers using two errors measured at the front axle: the heading error to the path, and the sideways distance from it, which becomes an extra steering angle that shrinks as the speed rises. A PID loop holds the target speed. Red dots: the course. Blue line: the car's path. Cross: the target point on the course.
 
 Path tracking simulation with Stanley steering control and PID speed control.
 
@@ -613,6 +745,10 @@ Reference
 
 ## Rear wheel feedback control
 
+![Rear wheel feedback control demo](gifs/rear_wheel_feedback.gif)
+
+**How it works:** The steering command comes from the position and heading errors measured at the rear axle plus the path's curvature, through a feedback law that drives both errors to zero; a PID loop holds the speed. Red line: the course. Blue dots: the car's path. Green cross: the target point.
+
 Path tracking simulation with rear wheel feedback steering control and PID speed control.
 
 Reference
@@ -621,6 +757,10 @@ Reference
 
 
 ## Linear–quadratic regulator (LQR) speed and steering control
+
+![LQR speed and steering control demo](gifs/lqr_speed_steer_control.gif)
+
+**How it works:** The sideways error, heading error and speed error go into one linear model, and an LQR controller computes the steering angle and acceleration that keep all three small for the least control effort. Red line: the course. Blue dots: the car's path. Green cross: the target point.
 
 Path tracking simulation with LQR speed and steering control.
 
@@ -631,6 +771,10 @@ Reference
 
 ## Model predictive speed and steering control
 
+![Model predictive control demo](gifs/model_predictive_control.gif)
+
+**How it works:** Every step the controller predicts the car's motion a few steps ahead with a linearised model and solves an optimisation (cvxpy) for the steering and acceleration that follow the course best within the car's limits; it applies the first command and repeats. Red line: the course. Blue dots: the car's path. Black: the car.
+
 Path tracking simulation with iterative linear model predictive speed and steering control.
 
 Reference
@@ -640,6 +784,10 @@ Reference
 - Real\-time Model Predictive Control \(MPC\), ACADO, Python \| Work\-is\-Playing
 
 ## Nonlinear Model predictive control with C-GMRES
+
+![C-GMRES nonlinear MPC demo](gifs/cgmres_nmpc.gif)
+
+**How it works:** Nonlinear MPC solves an optimal control problem at every step. C-GMRES makes this fast: instead of solving from scratch, it follows how the solution changes over time with one cheap linear solve (GMRES) per step. The two-wheeled robot drives from its start to the target pose at the origin along the red path.
 
 A motion planning and path tracking simulation with NMPC of C-GMRES 
 
@@ -664,6 +812,10 @@ flowchart TD
 
 ## N joint arm to point control
 
+![N joint arm to point control demo](gifs/n_joint_arm.gif)
+
+**How it works:** Inverse kinematics finds joint angles that put the end of the arm on the goal (green cross) by repeatedly stepping the angles with the inverse of the arm's Jacobian; each joint then turns toward its new angle under proportional control. The GIF picks random goals instead of mouse clicks.
+
 N joint arm to a point control simulation.
 
 This is an interactive simulation.
@@ -673,6 +825,10 @@ You can set the goal position of the end effector with left-click on the plottin
 In this simulation N = 10, however, you can change it.
 
 ## Arm navigation with obstacle avoidance 
+
+![Arm navigation with obstacle avoidance demo](gifs/arm_obstacle_navigation.gif)
+
+**How it works:** Every pair of joint angles of the two-link arm is checked for collisions and stored in a grid (the configuration space; black: the arm would hit an obstacle). A* searches that grid, where the angles wrap around, for a collision-free route (orange), and then the arm follows it around the obstacles.
 
 Arm navigation with obstacle avoidance simulation.
 
@@ -701,9 +857,17 @@ flowchart TD
 
 ## drone 3d trajectory following 
 
+![Drone 3D trajectory following demo](gifs/drone_3d_trajectory.gif)
+
+**How it works:** A quintic polynomial trajectory joins each pair of waypoints. Along it, a controller sets the thrust from the height error and the body torques from the attitude errors needed for the desired accelerations. Blue dotted line: the path flown.
+
 This is a 3d trajectory following simulation for a quadrotor.
 
 ## rocket powered landing
+
+![Rocket powered landing demo](gifs/rocket_powered_landing.gif)
+
+**How it works:** The landing is an optimisation problem with nonlinear dynamics. Successive convexification linearises the dynamics around the current trajectory, solves the resulting convex problem with cvxpy, and repeats until the trajectory stops changing. The animation shows the rocket (black) and its thrust (red) on the way down.
 
 This is a 3d trajectory generation simulation for a rocket powered landing.
 
@@ -725,6 +889,10 @@ flowchart TD
 ```
 
 ## bipedal planner with inverted pendulum
+
+![Bipedal walking planner demo](gifs/bipedal_planner.gif)
+
+**How it works:** The body is modelled as a linear inverted pendulum: a point mass kept at a constant height on a weightless leg, whose motion during one step has an exact formula. For each step the planner predicts the body's motion and moves the next footstep so the body ends the step where the plan wants it. Red: the body's path. Green: the support leg. Blue: the footsteps.
 
 This is a bipedal planner for modifying footsteps for an inverted pendulum.
 

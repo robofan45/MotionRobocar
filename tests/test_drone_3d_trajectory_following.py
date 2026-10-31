@@ -38,5 +38,20 @@ def test1(monkeypatch):
     assert np.linalg.norm(position[-1] - WAYPOINTS[0]) < 0.33  # observed 0.165 m
 
 
+def test_runs_with_the_animation_on(monkeypatch):
+    """Running the script shows the animation; that path must work too
+    (it crashed under NumPy 2.5, which no longer turns 1-element arrays
+    into Python floats)."""
+    import matplotlib.pyplot as plt
+    monkeypatch.setattr(plt, "pause", lambda *args, **kwargs: None)
+    monkeypatch.setattr(m, "show_animation", True)
+    try:
+        x, y, z = m.main()
+    finally:
+        plt.ioff()  # the quadrotor plot switches interactive mode on
+        plt.close("all")
+    assert len(x) == len(y) == len(z) > 0
+
+
 if __name__ == '__main__':
     conftest.run_this_test(__file__)

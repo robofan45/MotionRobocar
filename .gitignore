@@ -1,5 +1,6 @@
 *.csv
 *.gif
+!gifs/*.gif
 *.g2o
 
 # Byte-compiled / optimized / DLL files
