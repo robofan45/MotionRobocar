@@ -29,15 +29,15 @@ def test_1(monkeypatch):
     # The run ends at the goal (last waypoint), not at the 500 s time limit.
     # It stops within 0.3 m of the goal; the last stored pose is one step
     # before that.
-    assert t[-1] < 500.0  # observed 20.3 s
-    assert math.hypot(x[-1] - cx[-1], y[-1] - cy[-1]) < 0.5  # observed 0.245 m
+    assert t[-1] < 500.0  # observed 19.4 s
+    assert math.hypot(x[-1] - cx[-1], y[-1] - cy[-1]) < 0.5  # observed 0.258 m
 
     # Lateral tracking error w.r.t. the spline course.
-    assert distance_to_polyline(x, y, cx, cy).max() < 0.45  # observed 0.215 m
+    assert distance_to_polyline(x, y, cx, cy).max() < 0.45  # observed 0.224 m
 
     # Speed control: reaches the target speed, then slows down for the goal.
     assert max(v) == pytest.approx(TARGET_SPEED, rel=0.01)
-    assert v[-1] < 0.65  # observed 0.32 m/s (profile ends at 1 km/h)
+    assert v[-1] < 0.65  # observed 0.33 m/s (profile ends at 1 km/h)
 
 
 def test_speed_profile_slows_down_only_at_the_end():

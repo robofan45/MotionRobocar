@@ -28,7 +28,7 @@ def test_trajectory_and_landmarks_match_ground_truth(monkeypatch):
     nearest = [int(np.argmin(np.hypot(*(rfid - lm).T))) for lm in landmarks]
     assert sorted(nearest) == list(range(len(rfid)))
     errors = np.hypot(*(landmarks - rfid[nearest]).T)
-    assert errors.max() < 0.8  # seeded run: 0.41 m
+    assert errors.max() < 0.8  # seeded run: 0.42 m
 
     # A second run must give exactly the same result.
     for a, b in zip(first, run_demo(monkeypatch)):
