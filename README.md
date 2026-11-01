@@ -1,5 +1,3 @@
-<img src="icon.png" align="right" width="300" alt="header pic"/>
-
 # MotionRobocar
 
 Python codes and [textbook](docs/index_main.rst) for robotics algorithm.

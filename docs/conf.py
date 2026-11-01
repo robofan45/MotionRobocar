@@ -95,7 +95,6 @@ else:
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_logo = '../icon.png'
 html_theme_options = {
     'display_version': False,
 }
