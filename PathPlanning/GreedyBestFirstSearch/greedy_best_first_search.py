@@ -173,6 +173,8 @@ class BestFirstSearchPlanner:
             return False
         elif py >= self.maxy:
             return False
+        elif node.x >= self.xwidth or node.y >= self.ywidth:
+            return False  # outside the obstacle map
 
         # collision check
         if self.obmap[node.x][node.y]:
@@ -191,8 +193,9 @@ class BestFirstSearchPlanner:
         print("max_x:", self.maxx)
         print("max_y:", self.maxy)
 
-        self.xwidth = round((self.maxx - self.minx) / self.reso)
-        self.ywidth = round((self.maxy - self.miny) / self.reso)
+        # round up, so every position below maxx / maxy has a cell
+        self.xwidth = math.ceil((self.maxx - self.minx) / self.reso)
+        self.ywidth = math.ceil((self.maxy - self.miny) / self.reso)
         print("x_width:", self.xwidth)
         print("y_width:", self.ywidth)
 

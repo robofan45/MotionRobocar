@@ -240,6 +240,8 @@ class ThetaStarPlanner:
             return False
         elif py >= self.max_y:
             return False
+        elif node.x >= self.x_width or node.y >= self.y_width:
+            return False  # outside the obstacle map
 
         # collision check
         if self.obstacle_map[node.x][node.y]:
@@ -258,8 +260,9 @@ class ThetaStarPlanner:
         print("max_x:", self.max_x)
         print("max_y:", self.max_y)
 
-        self.x_width = round((self.max_x - self.min_x) / self.resolution)
-        self.y_width = round((self.max_y - self.min_y) / self.resolution)
+        # round up, so every position below max_x / max_y has a cell
+        self.x_width = math.ceil((self.max_x - self.min_x) / self.resolution)
+        self.y_width = math.ceil((self.max_y - self.min_y) / self.resolution)
         print("x_width:", self.x_width)
         print("y_width:", self.y_width)
 

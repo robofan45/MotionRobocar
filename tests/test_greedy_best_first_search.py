@@ -110,9 +110,6 @@ def test_unreachable_goal_returns_empty_path():
     assert planner.planning(3.0, 3.0, 15.0, 15.0) == ([], [])
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError,
-                   reason="when the map width in cells rounds down, the "
-                          "search steps one column past the obstacle map")
 def test_map_width_that_rounds_down():
     ox, oy = odd_width_with_gap_obstacles()
     planner = m.BestFirstSearchPlanner(ox, oy, 2.0, 1.0)
