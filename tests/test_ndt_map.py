@@ -1,14 +1,9 @@
 import numpy as np
-import pytest
 
 import conftest  # Add root path to sys.path
 from Mapping.ndt_map import ndt_map as m
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError, reason=(
-    "NDTMap.__init__ calls _create_grid_index_map(), which uses "
-    "self.grid_map, before _construct_grid_map() creates self.grid_map, so "
-    "building a map (and main()) fails"))
 def test_cells_hold_mean_and_covariance_of_their_points():
     np.random.seed(42)
     ox, oy = m.create_dummy_observation_data()
