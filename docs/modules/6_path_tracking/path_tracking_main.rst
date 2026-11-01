@@ -17,3 +17,6 @@ Path tracking is the ability of a robot to follow the reference path generated b
    model_predictive_speed_and_steering_control/model_predictive_speed_and_steering_control
    cgmres_nmpc/cgmres_nmpc
    move_to_a_pose/move_to_a_pose
+   mppi_control/mppi_control
+   ilqr/ilqr
+   control_barrier_function/control_barrier_function
