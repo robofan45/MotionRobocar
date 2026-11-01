@@ -55,6 +55,7 @@ class BestFirstSearchPlanner:
         output:
             rx: x position list of the final path
             ry: y position list of the final path
+            (both lists are empty when the goal cannot be reached)
         """
 
         nstart = self.Node(self.calc_xyindex(sx, self.minx),
@@ -64,6 +65,7 @@ class BestFirstSearchPlanner:
 
         open_set, closed_set = dict(), dict()
         open_set[self.calc_grid_index(nstart)] = nstart
+        goal_found = False
 
         while True:
             if len(open_set) == 0:
@@ -98,7 +100,9 @@ class BestFirstSearchPlanner:
             if current.x == ngoal.x and current.y == ngoal.y:
                 print("Found goal")
                 ngoal.pind = current.pind
+                ngoal.parent = current.parent
                 ngoal.cost = current.cost
+                goal_found = True
                 break
 
             # expand_grid search grid based on motion model
@@ -122,15 +126,18 @@ class BestFirstSearchPlanner:
                 else:
                     if open_set[n_id].cost > node.cost:
                         open_set[n_id] = node
-        closed_set[ngoal.pind] = current
-        rx, ry = self.calc_final_path(ngoal, closed_set)
+
+        if not goal_found:
+            return [], []
+
+        rx, ry = self.calc_final_path(ngoal)
         return rx, ry
 
-    def calc_final_path(self, ngoal, closedset):
+    def calc_final_path(self, ngoal):
         # generate final course
         rx, ry = [self.calc_grid_position(ngoal.x, self.minx)], [
             self.calc_grid_position(ngoal.y, self.miny)]
-        n = closedset[ngoal.pind]
+        n = ngoal.parent
         while n is not None:
             rx.append(self.calc_grid_position(n.x, self.minx))
             ry.append(self.calc_grid_position(n.y, self.miny))
