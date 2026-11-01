@@ -114,6 +114,12 @@ SECTIONS = {
         "histogram_filter": Demo(
             "Localization.histogram_filter.histogram_filter",
             "Histogram filter localization"),
+        "monte_carlo_localization": Demo(
+            "Localization.monte_carlo_localization.monte_carlo_localization",
+            "Monte Carlo localization with a lidar"),
+        "imm_filter": Demo(
+            "Localization.imm_filter.imm_filter",
+            "Interacting multiple model (IMM) filter", width=960),
     },
     "Mapping": {
         "gaussian_grid_map": Demo(
@@ -132,6 +138,9 @@ SECTIONS = {
         "rectangle_fitting": Demo(
             "Mapping.rectangle_fitting.rectangle_fitting",
             "Rectangle fitting"),
+        "multi_object_tracking": Demo(
+            "Mapping.multi_object_tracking.multi_object_tracking",
+            "Multi-object tracking"),
     },
     "SLAM": {
         "icp_matching": Demo("SLAM.ICPMatching.icp_matching",
@@ -189,6 +198,8 @@ SECTIONS = {
         "frenet_optimal_trajectory": Demo(
             PP + "FrenetOptimalTrajectory.frenet_optimal_trajectory",
             "Optimal trajectory in a Frenet frame"),
+        "orca": Demo(PP + "ORCA.orca",
+                     "ORCA multi-robot collision avoidance"),
     },
     "Path tracking": {
         "move_to_pose": Demo(PT + "move_to_pose.move_to_pose",
@@ -207,6 +218,12 @@ SECTIONS = {
             "Model predictive control (MPC)"),
         "cgmres_nmpc": Demo(PT + "cgmres_nmpc.cgmres_nmpc",
                             "Nonlinear MPC with C-GMRES"),
+        "mppi_control": Demo(PT + "mppi_control.mppi_control",
+                             "Model predictive path integral (MPPI) control"),
+        "ilqr": Demo(PT + "ilqr.ilqr", "iLQR trajectory optimization"),
+        "control_barrier_function": Demo(
+            PT + "control_barrier_function.control_barrier_function",
+            "Control barrier function safety filter", width=960),
     },
     "Arm navigation": {
         "n_joint_arm": Demo(
