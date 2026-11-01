@@ -35,5 +35,5 @@ This algorithm is also published as a standalone project, `robofan45/mppi-contro
 Reference
 ~~~~~~~~~
 
--  G. Williams, A. Aldrich and E. A. Theodorou, "Model Predictive Path Integral Control: From Theory to Parallel Computation", Journal of Guidance, Control, and Dynamics, 2017
--  G. Williams et al., "Information-Theoretic Model Predictive Control: Theory and Applications to Autonomous Driving", IEEE Transactions on Robotics, 2018
+-  G\. Williams, A. Aldrich and E. A. Theodorou, "Model Predictive Path Integral Control: From Theory to Parallel Computation", Journal of Guidance, Control, and Dynamics, 2017
+-  G\. Williams et al., "Information-Theoretic Model Predictive Control: Theory and Applications to Autonomous Driving", IEEE Transactions on Robotics, 2018

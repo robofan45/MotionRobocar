@@ -34,5 +34,5 @@ This algorithm is also published as a standalone project, `robofan45/multi-objec
 Reference
 ~~~~~~~~~
 
--  Y. Bar-Shalom, P. K. Willett and X. Tian, "Tracking and Data Fusion: A Handbook of Algorithms", YBS Publishing, 2011
--  H. W. Kuhn, "The Hungarian Method for the Assignment Problem", Naval Research Logistics Quarterly, 1955
+-  Y\. Bar-Shalom, P. K. Willett and X. Tian, "Tracking and Data Fusion: A Handbook of Algorithms", YBS Publishing, 2011
+-  H\. W. Kuhn, "The Hungarian Method for the Assignment Problem", Naval Research Logistics Quarterly, 1955
