@@ -41,10 +41,6 @@ def test_2d_rotation_is_recovered(result_2d):
     np.testing.assert_allclose(rot, inverse(MOTION_2D)[0], atol=1e-9)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "update_homogeneous_matrix() returns Hin @ H, composing the per-iteration "
-    "transforms in the wrong order (should be H @ Hin), so the returned "
-    "translation is wrong although the point sets align"))
 def test_2d_transform_is_recovered(result_2d):
     rot, trans = result_2d
     expected_rot, expected_trans = inverse(MOTION_2D)
@@ -52,10 +48,6 @@ def test_2d_transform_is_recovered(result_2d):
     np.testing.assert_allclose(trans, expected_trans, atol=1e-6)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "update_homogeneous_matrix() returns Hin @ H, composing the per-iteration "
-    "transforms in the wrong order (should be H @ Hin), so the returned "
-    "rotation and translation are wrong although the point sets align"))
 def test_3d_transform_is_recovered(result_3d):
     rot, trans = result_3d
     expected_rot, expected_trans = inverse(MOTION_3D)
