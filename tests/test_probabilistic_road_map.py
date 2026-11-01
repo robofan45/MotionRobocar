@@ -66,10 +66,8 @@ def test1(demo):
     for x, y in path:
         assert min(math.hypot(x - ox, y - oy)
                    for ox, oy, _ in record["obstacles"]) >= record["rr"]
-    # edges are only checked every robot radius (5 m) along their length;
-    # the path cuts 0.074 m into the radius (see the xfail test below),
-    # allow twice that
-    assert pc.min_clearance(path, record["obstacles"], record["rr"]) >= -0.15
+    # and so does every edge, along its whole length
+    assert pc.min_clearance(path, record["obstacles"], record["rr"]) >= 0.0
     # the path is a shortest path on the road map it searched
     assert pc.path_length(path) == pytest.approx(
         road_map_shortest_distance(record), rel=1e-12)
@@ -82,11 +80,6 @@ def test1_same_result_every_run(demo):
     assert path == demo[0]
 
 
-@pytest.mark.xfail(
-    strict=True, raises=AssertionError,
-    reason="is_collision() checks an edge only every robot radius (5 m) "
-           "along its length, so road map edges can pass closer than the "
-           "robot radius to an obstacle (0.074 m closer in this run)")
 def test_path_keeps_robot_radius_clearance(demo):
     path, record = demo
     assert pc.min_clearance(path, record["obstacles"], record["rr"]) >= 0.0
