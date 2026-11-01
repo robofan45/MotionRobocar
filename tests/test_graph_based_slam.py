@@ -54,10 +54,6 @@ def test_two_runs_give_identical_results(demo):
         np.testing.assert_array_equal(a, b)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "'H[0:3, 0:3] += I' only damps each Gauss-Newton step of the first "
-    "pose instead of fixing it: its heading drifts (to -0.07 rad here), so "
-    "the whole optimized trajectory is rotated about the origin"))
 def test_first_pose_heading_stays_fixed(demo):
     _, x_opt = demo
     assert abs(x_opt[2, 0]) < 1e-6

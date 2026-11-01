@@ -179,10 +179,9 @@ def graph_based_slam(x_init, hz):
         for edge in edges:
             H, b = fill_H_and_b(H, b, edge)
 
-        # to fix origin
-        H[0:STATE_SIZE, 0:STATE_SIZE] += np.identity(STATE_SIZE)
-
-        dx = - np.linalg.inv(H) @ b
+        # to fix origin, the first pose is not a variable: solve for the rest
+        dx = np.zeros((n, 1))
+        dx[STATE_SIZE:] = - np.linalg.inv(H[STATE_SIZE:, STATE_SIZE:]) @ b[STATE_SIZE:]
 
         for i in range(nt):
             x_opt[0:3, i] += dx[i * 3:i * 3 + 3, 0]
