@@ -4,6 +4,7 @@ FastSLAM 1.0 example
 
 """
 
+import copy
 import math
 
 import matplotlib.pyplot as plt
@@ -246,13 +247,14 @@ def resampling(particles):
                 index += 1
             indexes.append(index)
 
-        tmp_particles = particles[:]
+        # deep copy: particles[i] is overwritten while later ones read it
+        tmp_particles = copy.deepcopy(particles)
         for i in range(len(indexes)):
             particles[i].x = tmp_particles[indexes[i]].x
             particles[i].y = tmp_particles[indexes[i]].y
             particles[i].yaw = tmp_particles[indexes[i]].yaw
-            particles[i].lm = tmp_particles[indexes[i]].lm[:, :]
-            particles[i].lmP = tmp_particles[indexes[i]].lmP[:, :]
+            particles[i].lm = tmp_particles[indexes[i]].lm.copy()
+            particles[i].lmP = tmp_particles[indexes[i]].lmP.copy()
             particles[i].w = 1.0 / N_PARTICLE
 
     return particles
