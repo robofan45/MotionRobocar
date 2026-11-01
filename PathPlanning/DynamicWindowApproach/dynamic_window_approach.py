@@ -174,8 +174,9 @@ def calc_control_and_trajectory(x, dw, config, goal, ob):
                     # to ensure the robot do not get stuck in
                     # best v=0 m/s (in front of an obstacle) and
                     # best omega=0 rad/s (heading to the goal with
-                    # angle difference of 0)
-                    best_u[1] = -config.max_delta_yaw_rate
+                    # angle difference of 0), turn as fast as the dynamic
+                    # window allows
+                    best_u[1] = dw[2]
     return best_u, best_trajectory
 
 

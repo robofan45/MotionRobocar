@@ -119,9 +119,6 @@ def test_without_theta_star_it_finds_shortest_grid_paths(seed, monkeypatch):
     chk.check_planner(planner, start, goal)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="returns a path made of the goal alone instead of "
-                          "an empty path when the goal cannot be reached")
 def test_unreachable_goal_returns_empty_path():
     ox, oy = chk.enclosed_goal_obstacles()
     planner = m.ThetaStarPlanner(ox, oy, 1.0, 0.5)
@@ -134,9 +131,6 @@ def test_start_equals_goal():
     assert planner.planning(7.0, 7.0, 7.0, 7.0) == ([7.0], [7.0])
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError,
-                   reason="when the map width in cells rounds down, the "
-                          "search steps one column past the obstacle map")
 def test_map_width_that_rounds_down():
     ox, oy = odd_width_with_gap_obstacles()
     planner = m.ThetaStarPlanner(ox, oy, 2.0, 1.0)

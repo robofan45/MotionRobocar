@@ -80,8 +80,8 @@ def test1(planned):
     path, planner = planned
     start, goal = np.array(planner.start.x), np.array(planner.end.x)
 
-    # The path connects the start and goal configurations (in either order;
-    # see test_path_runs_from_start_to_goal).
+    # The path connects the start and goal configurations (the order is
+    # checked by test_path_runs_from_start_to_goal).
     ends = [path[0], path[-1]]
     assert any(np.allclose(e, start) for e in ends)
     assert any(np.allclose(e, goal) for e in ends)
@@ -90,7 +90,7 @@ def test1(planned):
         <= planner.expand_dis + 1e-9  # observed 0.2 rad
     # the joints stay outside every obstacle along the path, which is what
     # the planner checks (every 0.1 rad); here checked every 0.01 rad
-    assert clearance(densify(path), planner, links=False) > 0.0  # observed 1.5 mm
+    assert clearance(densify(path), planner, links=False) > 0.0  # observed 2.0 cm
 
 
 def test_planning_is_reproducible(planned, monkeypatch):
@@ -98,20 +98,12 @@ def test_planning_is_reproducible(planned, monkeypatch):
     np.testing.assert_array_equal(path, planned[0])
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True, reason=(
-    "generate_final_course() calls reversed(path) and discards the result, "
-    "so the path runs from the goal to the start (and main() plots the "
-    "start configuration as the 'final configuration')"))
 def test_path_runs_from_start_to_goal(planned):
     path, planner = planned
     np.testing.assert_allclose(path[0], planner.start.x)
     np.testing.assert_allclose(path[-1], planner.end.x)
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True, reason=(
-    "check_collision() only tests the frame origins (joints) against the "
-    "obstacles, so at path configurations it accepted a link between two "
-    "joints passes 1.0 cm into an obstacle"))
 def test_links_stay_clear_of_obstacles(planned):
     path, planner = planned
     # only the path nodes: configurations the planner itself checked

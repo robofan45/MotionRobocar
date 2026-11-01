@@ -83,7 +83,8 @@ def update_homogeneous_matrix(Hin, R, T):
     if Hin is None:
         return H
     else:
-        return Hin @ H
+        # H moves points that Hin has already moved, so it is applied last
+        return H @ Hin
 
 
 def nearest_neighbor_association(previous_points, current_points):

@@ -15,7 +15,7 @@ def test_estimate_beats_gps_and_dead_reckoning(monkeypatch):
     monkeypatch.setattr(m, "show_animation", False)
     x_est, x_true, x_dr, z = m.main()
     est_rmse = position_rmse(x_est, x_true)
-    assert est_rmse < 0.35  # seeded run: 0.17 m
+    assert est_rmse < 0.35  # seeded run: 0.22 m
     assert est_rmse < position_rmse(z, x_true)  # raw GPS: 0.34 m
     assert est_rmse < position_rmse(x_dr, x_true) / 10  # dead reckoning: 3.9 m
 
@@ -30,7 +30,7 @@ def test_velocity_correction_estimates_scale_factor(monkeypatch):
     monkeypatch.setattr(mv, "show_animation", False)
     x_est, x_true, x_dr, z = mv.main()
     # The true velocity scale factor is 0.9 and the filter starts from 1.0.
-    assert abs(x_est[4, -1] - 0.9) < 0.008  # seeded run: 0.896
+    assert abs(x_est[4, -1] - 0.9) < 0.008  # seeded run: 0.901
     assert np.max(np.abs(x_est[4, -100:] - 0.9)) < 0.01  # seeded run: 0.005
     est_rmse = position_rmse(x_est, x_true)
     assert est_rmse < 0.005  # seeded run: 0.0025 m
@@ -43,10 +43,6 @@ def test_velocity_correction_two_runs_give_identical_results(monkeypatch):
         np.testing.assert_array_equal(a, b)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "jacob_f() treats velocity as a persistent state (dx/dv = dt*cos(yaw), "
-    "dv/dv = 1), but motion_model() takes the velocity from the input "
-    "(F[3, 3] = 0), so the Jacobian does not match the motion model"))
 @pytest.mark.parametrize("module, x", [
     pytest.param(m, [1.0, 2.0, 0.4, 0.7], id="ekf"),
     pytest.param(mv, [1.0, 2.0, 0.4, 0.7, 0.95], id="velocity_correction"),

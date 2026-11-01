@@ -49,13 +49,9 @@ def test_fit_matches_vehicle_outline(x, y, yaw_deg, width, length):
     assert math.degrees(min(angle, math.pi / 2 - angle)) < 6.0  # worst: 3 deg
     for cx, cy in zip(rect.rect_c_x[:4], rect.rect_c_y[:4]):
         nearest = np.min(np.hypot(corners[:, 0] - cx, corners[:, 1] - cy))
-        assert nearest < 1.0  # worst seeded case: 0.50 m
+        assert nearest < 1.0  # worst seeded case: 0.36 m
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "VehicleSimulator.calc_global_contour() multiplies row vectors by "
-    "rot_mat_2d(yaw), which rotates the outline by -yaw, so the simulated "
-    "body does not point in the direction the vehicle drives"))
 def test_vehicle_outline_points_along_heading():
     vehicle = m.VehicleSimulator(0.0, 0.0, np.deg2rad(30.0), 1.0, 10.0, 3.0, 5.0)
     corners = outline_corners(vehicle)

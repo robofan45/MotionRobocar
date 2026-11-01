@@ -102,9 +102,6 @@ def test_demo_is_reproducible(demo):
     assert np.array_equal(path, demo[3])
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="the cell where the two searches meet is listed "
-                          "twice in the path")
 def test_path_has_no_repeated_points(demo):
     cells = [tuple(cell) for cell in demo[3].tolist()]
     assert cells == drop_repeats(cells)

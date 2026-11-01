@@ -1,4 +1,4 @@
-""" 
+"""
 
 Simulator
 
@@ -43,7 +43,8 @@ class VehicleSimulator:
         plt.plot(gx, gy, "--b")
 
     def calc_global_contour(self):
-        gxy = np.stack([self.vc_x, self.vc_y]).T @ rot_mat_2d(self.yaw)
+        # rows are points, so rotate them by yaw with the transposed matrix
+        gxy = np.stack([self.vc_x, self.vc_y]).T @ rot_mat_2d(self.yaw).T
         gx = gxy[:, 0] + self.x
         gy = gxy[:, 1] + self.y
 

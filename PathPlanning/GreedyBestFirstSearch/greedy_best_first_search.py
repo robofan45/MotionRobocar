@@ -55,6 +55,7 @@ class BestFirstSearchPlanner:
         output:
             rx: x position list of the final path
             ry: y position list of the final path
+            (both lists are empty when the goal cannot be reached)
         """
 
         nstart = self.Node(self.calc_xyindex(sx, self.minx),
@@ -64,6 +65,7 @@ class BestFirstSearchPlanner:
 
         open_set, closed_set = dict(), dict()
         open_set[self.calc_grid_index(nstart)] = nstart
+        goal_found = False
 
         while True:
             if len(open_set) == 0:
@@ -98,7 +100,9 @@ class BestFirstSearchPlanner:
             if current.x == ngoal.x and current.y == ngoal.y:
                 print("Found goal")
                 ngoal.pind = current.pind
+                ngoal.parent = current.parent
                 ngoal.cost = current.cost
+                goal_found = True
                 break
 
             # expand_grid search grid based on motion model
@@ -122,15 +126,18 @@ class BestFirstSearchPlanner:
                 else:
                     if open_set[n_id].cost > node.cost:
                         open_set[n_id] = node
-        closed_set[ngoal.pind] = current
-        rx, ry = self.calc_final_path(ngoal, closed_set)
+
+        if not goal_found:
+            return [], []
+
+        rx, ry = self.calc_final_path(ngoal)
         return rx, ry
 
-    def calc_final_path(self, ngoal, closedset):
+    def calc_final_path(self, ngoal):
         # generate final course
         rx, ry = [self.calc_grid_position(ngoal.x, self.minx)], [
             self.calc_grid_position(ngoal.y, self.miny)]
-        n = closedset[ngoal.pind]
+        n = ngoal.parent
         while n is not None:
             rx.append(self.calc_grid_position(n.x, self.minx))
             ry.append(self.calc_grid_position(n.y, self.miny))
@@ -173,6 +180,8 @@ class BestFirstSearchPlanner:
             return False
         elif py >= self.maxy:
             return False
+        elif node.x >= self.xwidth or node.y >= self.ywidth:
+            return False  # outside the obstacle map
 
         # collision check
         if self.obmap[node.x][node.y]:
@@ -191,8 +200,9 @@ class BestFirstSearchPlanner:
         print("max_x:", self.maxx)
         print("max_y:", self.maxy)
 
-        self.xwidth = round((self.maxx - self.minx) / self.reso)
-        self.ywidth = round((self.maxy - self.miny) / self.reso)
+        # round up, so every position below maxx / maxy has a cell
+        self.xwidth = math.ceil((self.maxx - self.minx) / self.reso)
+        self.ywidth = math.ceil((self.maxy - self.miny) / self.reso)
         print("x_width:", self.xwidth)
         print("y_width:", self.ywidth)
 

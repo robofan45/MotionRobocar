@@ -83,8 +83,6 @@ def test_demo_path_is_valid(demo):
     assert_clear_of_obstacles(rx, ry, ox, oy, ROBOT_RADIUS)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="the goal is listed twice at the start of the path")
 def test_path_has_no_repeated_points(demo):
     rx, ry = demo[3]
     assert (rx, ry) == drop_repeats(rx, ry)
@@ -100,19 +98,12 @@ def test_random_maps_give_valid_paths(seed):
     assert_clear_of_obstacles(rx[:-1], ry[:-1], ox, oy, 0.5)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="returns a path that jumps from the goal to the last "
-                          "searched cell, through the walls, instead of an "
-                          "empty path")
 def test_unreachable_goal_returns_empty_path():
     ox, oy = chk.enclosed_goal_obstacles()
     planner = m.BestFirstSearchPlanner(ox, oy, 1.0, 0.5)
     assert planner.planning(3.0, 3.0, 15.0, 15.0) == ([], [])
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError,
-                   reason="when the map width in cells rounds down, the "
-                          "search steps one column past the obstacle map")
 def test_map_width_that_rounds_down():
     ox, oy = odd_width_with_gap_obstacles()
     planner = m.BestFirstSearchPlanner(ox, oy, 2.0, 1.0)

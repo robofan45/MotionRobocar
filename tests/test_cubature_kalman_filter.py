@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import pytest
 
 import conftest  # Add root path to sys.path
 from Localization.cubature_kalman_filter import cubature_kalman_filter as m
@@ -13,9 +12,6 @@ def run_demo(monkeypatch):
     monkeypatch.setattr(m, "show_final", False)
     monkeypatch.setattr(m, "show_animation", False)
     monkeypatch.setattr(m, "show_ellipse", False)
-    # main() changes the module-level x_0 in place (see the xfail test
-    # below), so every run starts from its own copy of the initial state.
-    monkeypatch.setattr(m, "x_0", X_0.copy())
     return m.main()
 
 
@@ -26,7 +22,7 @@ def position_rmse(a, b):
 def test_estimate_is_closer_to_truth_than_measurements(monkeypatch):
     x_true, x_est, z = run_demo(monkeypatch)
     est_rmse = position_rmse(x_est, x_true)
-    assert est_rmse < 0.2  # seeded run: 0.097 m
+    assert est_rmse < 0.1  # seeded run: 0.052 m
     assert est_rmse < position_rmse(z, x_true)  # raw GPS: 0.128 m
 
 
@@ -56,10 +52,6 @@ def test_prediction_mean_matches_cubature_rule():
     np.testing.assert_allclose(x_pred[:, 0], mean, atol=1e-12)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "cubature_prediction() propagates the cubature points twice: f() updates "
-    "its argument in place, so the covariance loop applies the motion model "
-    "again and the predicted covariance is too large"))
 def test_prediction_covariance_matches_cubature_rule():
     _, p_pred = m.cubature_prediction(X.copy(), P.copy())
     points = np.array([m.f(pt.copy()) for pt in cubature_points(X, P)])
@@ -77,10 +69,6 @@ def test_update_matches_kalman_filter_for_linear_measurement():
     np.testing.assert_allclose(p_upd, P - gain @ m.hx @ P, atol=1e-12)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "main() advances the module-level initial state x_0 in place (f() "
-    "updates its argument), so a second run in the same process starts "
-    "from a different state"))
 def test_main_leaves_initial_state_unchanged(monkeypatch):
     run_demo(monkeypatch)
     np.testing.assert_array_equal(m.x_0, X_0)

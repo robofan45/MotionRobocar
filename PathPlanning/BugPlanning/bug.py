@@ -174,6 +174,9 @@ class BugPlanner:
                     dist = d
                 if back_to_start and not second_round:
                     second_round = True
+                    # erase the first lap and go round again from the point
+                    # where the obstacle was hit (the first visited point)
+                    cand_x, cand_y = visited_x[0], visited_y[0]
                     del self.r_x[-len(visited_x):]
                     del self.r_y[-len(visited_y):]
                     visited_x[:], visited_y[:] = [], []

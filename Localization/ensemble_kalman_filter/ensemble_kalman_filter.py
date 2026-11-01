@@ -96,7 +96,7 @@ def calc_covariance(xEst, px):
     cov = np.zeros((3, 3))
 
     for i in range(px.shape[1]):
-        dx = (px[:, i] - xEst)[0:3]
+        dx = (px[:, i:i + 1] - xEst)[0:3]  # column slice keeps shape (4, 1)
         cov += dx.dot(dx.T)
     cov /= NP
 

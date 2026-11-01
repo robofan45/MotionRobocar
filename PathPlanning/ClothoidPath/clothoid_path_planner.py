@@ -100,7 +100,8 @@ def Y(a, b, c):
 
 def solve_g_for_root(theta1, theta2, delta):
     initial_guess = 3*(theta1 + theta2)
-    return fsolve(lambda A: Y(2*A, delta - A, theta1), [initial_guess])
+    # fsolve passes and returns 1-element arrays; X and Y need floats
+    return fsolve(lambda A: Y(2*A[0], delta - A[0], theta1), [initial_guess])[0]
 
 
 def compute_path_length(r, theta1, delta, A):

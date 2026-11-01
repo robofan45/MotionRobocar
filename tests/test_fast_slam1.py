@@ -27,22 +27,18 @@ def test_observed_landmarks_are_mapped_near_true_positions(demo):
     assert observed.sum() == 5
     landmarks = weighted_landmarks(particles)
     errors = np.hypot(*(landmarks[observed] - rfid[observed]).T)
-    # seeded run: 1.41 m, although one observation alone places a landmark
-    # to about 0.7 m (1 sigma); see the resampling xfail below
-    assert errors.max() < 2.9
+    # seeded run: 0.63 m; one observation alone places a landmark to about
+    # 0.7 m (1 sigma)
+    assert errors.max() < 1.3
     assert np.all(landmarks[~observed] == 0.0)
 
 
 def test_pose_estimate_stays_near_truth(demo):
     x_est, x_true, x_dr, particles, rfid = demo
     rmse = np.sqrt(np.mean(np.sum((x_est[:2] - x_true[:2]) ** 2, axis=0)))
-    assert rmse < 0.3  # seeded run: 0.14 m
+    assert rmse < 0.3  # seeded run: 0.090 m
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "resampling() copies particles from a shallow copy of the list "
-    "(particles[:]), so it reads particles it has already overwritten, and "
-    "resampled particles share landmark arrays"))
 def test_resampling_copies_the_selected_particles():
     n = m.N_PARTICLE
     particles = [m.Particle(1) for _ in range(n)]

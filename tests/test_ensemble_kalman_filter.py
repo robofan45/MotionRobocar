@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import conftest  # Add root path to sys.path
 from Localization.ensemble_kalman_filter import ensemble_kalman_filter as m
@@ -22,10 +21,6 @@ def test_estimate_beats_dead_reckoning(monkeypatch):
         np.testing.assert_array_equal(a, b)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "calc_covariance() subtracts the (4, 1) estimate from a (4,) particle "
-    "column, which broadcasts to a 4x4 matrix, so PEst is not the ensemble "
-    "covariance (PEst is only used to draw the covariance ellipse)"))
 def test_covariance_is_ensemble_covariance():
     rng = np.random.default_rng(0)
     px = rng.normal(size=(4, m.NP))

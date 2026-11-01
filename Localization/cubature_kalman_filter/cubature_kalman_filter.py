@@ -96,6 +96,7 @@ def f(x):
     http://fusion.isif.org/proceedings/fusion08CD/papers/1569107835.pdf
     https://github.com/balzer82/Kalman
     """
+    x = x.copy()  # leave the caller's state (or cubature point) unchanged
     x[0] = x[0] + (x[3]/x[4]) * (np.sin(x[4] * dt + x[2]) - np.sin(x[2]))
     x[1] = x[1] + (x[3]/x[4]) * (- np.cos(x[4] * dt + x[2]) + np.cos(x[2]))
     x[2] = x[2] + x[4] * dt

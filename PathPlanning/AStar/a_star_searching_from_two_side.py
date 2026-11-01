@@ -78,7 +78,7 @@ def boundary_and_obstacles(start, goal, top_vertex, bottom_vertex, obs_number):
 
 def find_neighbor(node, ob, closed):
     # Convert obstacles to a set for faster lookup
-    ob_set = set(map(tuple, ob.tolist()))  
+    ob_set = set(map(tuple, ob.tolist()))
     neighbor_set = set()
 
     # Generate neighbors within the 3x3 grid around the node
@@ -214,7 +214,7 @@ def get_path(org_list, goal_list, coordinate):
         node = node.parent
     path_goal.append(goal_list[0].coordinate)
     path_org.reverse()
-    path = path_org + path_goal
+    path = path_org + path_goal[1:]  # both halves hold the meeting cell
     path = np.array(path)
     return path
 

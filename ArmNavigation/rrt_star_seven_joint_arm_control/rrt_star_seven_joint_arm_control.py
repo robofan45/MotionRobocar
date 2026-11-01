@@ -220,7 +220,7 @@ class RRTStar:
             path.append(node.x)
             node = node.parent
         path.append(node.x)
-        reversed(path)
+        path.reverse()  # from the start to the goal
         return path
 
     def calc_dist_to_goal(self, x):
@@ -326,17 +326,19 @@ class RRTStar:
             return False
 
         for (ox, oy, oz, size) in obstacleList:
+            centre = np.array([ox, oy, oz])
             for x in node.path_x:
-                x_list, y_list, z_list = robot.get_points(x)
-                dx_list = [ox - x_point for x_point in x_list]
-                dy_list = [oy - y_point for y_point in y_list]
-                dz_list = [oz - z_point for z_point in z_list]
-                d_list = [dx * dx + dy * dy + dz * dz
-                          for (dx, dy, dz) in zip(dx_list,
-                                                  dy_list,
-                                                  dz_list)]
+                # the links are the line segments between consecutive joints
+                joints = np.array(robot.get_points(x)).T
+                start, segment = joints[:-1], np.diff(joints, axis=0)
+                length2 = np.sum(segment ** 2, axis=1)
+                # closest point of each link to the obstacle centre
+                t = np.divide(np.sum((centre - start) * segment, axis=1),
+                              length2, out=np.zeros_like(length2),
+                              where=length2 > 0)
+                closest = start + np.clip(t, 0.0, 1.0)[:, None] * segment
 
-                if min(d_list) <= size ** 2:
+                if np.linalg.norm(closest - centre, axis=1).min() <= size:
                     return False  # collision
 
         return True  # safe

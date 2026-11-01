@@ -54,12 +54,6 @@ def test_fresnel_integrals_without_curvature_rate(b, c):
     assert m.Y(0.0, b, c) == pytest.approx(y, abs=1e-12)
 
 
-@pytest.mark.xfail(
-    strict=True, raises=AssertionError,
-    reason="no path is generated: under NumPy 2.x fsolve passes 1-element "
-           "arrays into its callback and solve_g_for_root() returns one, so "
-           "math.sin/cos raise TypeError; generate_clothoid_path() catches "
-           "the error and returns None")
 def test_demo_paths(demo):
     (start, start_yaws, goal, goal_yaws, n_points), paths = demo
     assert all(path is not None for path in paths)

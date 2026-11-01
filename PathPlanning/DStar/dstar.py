@@ -175,17 +175,20 @@ class Dstar:
         AddNewObstacle(self.map) # add new obstacle after the first search finished
 
         while tmp != end:
+            if tmp.parent.state == "#":
+                # replan before recording tmp, so it is listed once
+                self.modify(tmp)
+                continue
             tmp.set_state("*")
             rx.append(tmp.x)
             ry.append(tmp.y)
             if show_animation:
                 plt.plot(rx, ry, "-r")
                 plt.pause(0.01)
-            if tmp.parent.state == "#":
-                self.modify(tmp)
-                continue
             tmp = tmp.parent
         tmp.set_state("e")
+        rx.append(tmp.x)
+        ry.append(tmp.y)
 
         return rx, ry
 

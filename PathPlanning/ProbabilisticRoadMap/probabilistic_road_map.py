@@ -67,30 +67,23 @@ def prm_planning(start_x, start_y, goal_x, goal_y,
 
 
 def is_collision(sx, sy, gx, gy, rr, obstacle_kd_tree):
-    x = sx
-    y = sy
     dx = gx - sx
     dy = gy - sy
-    yaw = math.atan2(gy - sy, gx - sx)
     d = math.hypot(dx, dy)
 
     if d >= MAX_EDGE_LEN:
         return True
 
-    D = rr
-    n_step = round(d / D)
-
-    for i in range(n_step):
-        dist, _ = obstacle_kd_tree.query([x, y])
-        if dist <= rr:
+    # only obstacles within rr + d / 2 of the edge's midpoint can come within
+    # rr of the edge; check their exact distance to it
+    mid = [(sx + gx) / 2, (sy + gy) / 2]
+    for i in obstacle_kd_tree.query_ball_point(mid, rr + d / 2):
+        ox, oy = obstacle_kd_tree.data[i]
+        # closest point of the edge to the obstacle
+        t = 0.0 if d == 0 else ((ox - sx) * dx + (oy - sy) * dy) / d ** 2
+        t = min(max(t, 0.0), 1.0)
+        if math.hypot(sx + t * dx - ox, sy + t * dy - oy) <= rr:
             return True  # collision
-        x += D * math.cos(yaw)
-        y += D * math.sin(yaw)
-
-    # goal point check
-    dist, _ = obstacle_kd_tree.query([gx, gy])
-    if dist <= rr:
-        return True  # collision
 
     return False  # OK
 

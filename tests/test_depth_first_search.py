@@ -76,27 +76,18 @@ def test_random_maps_give_valid_paths(seed):
     assert_clear_of_obstacles(rx[:-1], ry[:-1], ox, oy, 0.5)
 
 
-@pytest.mark.xfail(strict=True, raises=KeyError,
-                   reason="raises KeyError(-1) instead of returning an "
-                          "empty path when the goal cannot be reached")
 def test_unreachable_goal_returns_empty_path():
     ox, oy = chk.enclosed_goal_obstacles()
     planner = m.DepthFirstSearchPlanner(ox, oy, 1.0, 0.5)
     assert planner.planning(3.0, 3.0, 15.0, 15.0) == ([], [])
 
 
-@pytest.mark.xfail(strict=True, raises=KeyError,
-                   reason="raises KeyError(-1) when start and goal are the "
-                          "same cell")
 def test_start_equals_goal():
     ox, oy = chk.boundary(20)
     planner = m.DepthFirstSearchPlanner(ox, oy, 1.0, 0.5)
     assert planner.planning(7.0, 7.0, 7.0, 7.0) == ([7.0], [7.0])
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError,
-                   reason="when the map width in cells rounds down, the "
-                          "search steps one column past the obstacle map")
 def test_map_width_that_rounds_down():
     ox, oy = odd_width_with_gap_obstacles()
     planner = m.DepthFirstSearchPlanner(ox, oy, 2.0, 1.0)

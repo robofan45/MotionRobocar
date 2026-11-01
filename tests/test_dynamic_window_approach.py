@@ -102,14 +102,7 @@ def test_speed_and_turn_rate_stay_within_limits(scenario, request):
     assert np.all(np.abs(np.diff(v)) <= config.max_accel * config.dt + 1e-9)
 
 
-@pytest.mark.parametrize("scenario", [
-    "main1",
-    "main2",
-    pytest.param("stuck_main", marks=pytest.mark.xfail(
-        strict=True, raises=AssertionError,
-        reason="when the robot stops, the unstick rule sets the turn rate "
-               "to -max_delta_yaw_rate, an acceleration [rad/s^2] used as a "
-               "rate: a jump ten times what one time step allows"))])
+@pytest.mark.parametrize("scenario", SCENARIOS)
 def test_turn_rate_changes_no_faster_than_allowed(scenario, request):
     trajectory, config, _ = request.getfixturevalue(scenario)
     omega = trajectory[:, 4]
