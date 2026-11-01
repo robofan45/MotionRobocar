@@ -4,7 +4,7 @@ stays near the course away from the obstacles, and respects its limits.
 
 MPPI is random, and floating-point differences between platforms change a
 run the way a different seed does, so every bound below holds with margin
-for all of seeds 0 to 11 (the worst value over those seeds is noted).
+for all of seeds 0 to 99 (the worst value over those seeds is noted).
 """
 import numpy as np
 import pytest
@@ -22,21 +22,21 @@ def run():
 
 def test_car_finishes_the_course(run):
     states, controls, course, _ = run
-    assert len(controls) * m.DT < 25.0  # worst 21.2 s
-    assert np.linalg.norm(states[-1, :2] - course[-1]) < 2.0  # worst 1.13 m
+    assert len(controls) * m.DT < 25.0  # worst 16.6 s
+    assert np.linalg.norm(states[-1, :2] - course[-1]) < 1.0  # worst 0.30 m
 
 
 def test_car_never_touches_an_obstacle(run):
     states, _, _, obstacles = run
-    assert m.obstacle_gaps(states, obstacles).min() > 0.3  # worst 0.66 m
+    assert m.obstacle_gaps(states, obstacles).min() > 0.3  # worst 0.79 m
 
 
 def test_car_stays_near_the_course_away_from_obstacles(run):
     states, _, course, obstacles = run
     distance = np.sqrt(m.squared_distance_to_course(states[:, :2], course))
     clear = m.obstacle_gaps(states, obstacles).min(axis=1) > 10.0
-    assert clear.sum() > 50  # worst 74 steps
-    assert distance[clear].max() < 3.0  # worst 2.00 m
+    assert clear.sum() > 50  # worst 65 steps
+    assert distance[clear].max() < 2.0  # worst 0.56 m
 
 
 def test_steering_acceleration_and_speed_stay_within_limits(run):
@@ -46,7 +46,7 @@ def test_steering_acceleration_and_speed_stay_within_limits(run):
     assert np.abs(np.diff(steer)).max() <= m.MAX_STEER_RATE * m.DT + 1e-9
     assert np.abs(controls[:, 0]).max() <= m.MAX_ACCEL
     # only the speed along the course is held at TARGET_SPEED
-    assert states[:, 3].max() < 1.25 * m.TARGET_SPEED  # worst 6.87 m/s
+    assert states[:, 3].max() < 1.1 * m.TARGET_SPEED  # worst 6.32 m/s
 
 
 @pytest.mark.parametrize("seed", [0, 9])
@@ -98,6 +98,24 @@ def test_weights_favour_cheap_samples():
                                atol=1e-12)
     np.testing.assert_allclose(m.mppi_weights(costs * 1e4, 1.0),
                                [0, 1, 0, 0], atol=1e-12)
+
+
+def test_update_does_not_hinge_on_one_random_draw(run):
+    """Repeat MPPI updates from states of the run, with the commands the car
+    went on to apply as the plan: different random draws give nearly the
+    same command. If one sample took nearly all the weight, each update
+    would copy that sample's noise and every seed would drive its own
+    path."""
+    states, controls, course, obstacles = run
+    spread = []
+    for i in (20, 60, 100):
+        plan = controls[i:i + m.HORIZON]
+        first = [m.mppi_control(states[i], plan, course, obstacles,
+                                np.random.default_rng(seed))[0][0]
+                 for seed in range(10)]
+        spread.append(np.std(first, axis=0) / m.NOISE_STD)
+    # 0.11 here; copying one sample's noise gives about 0.6
+    assert np.median(spread) < 0.3
 
 
 def test_same_result_twice(run, monkeypatch):

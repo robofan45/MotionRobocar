@@ -22,6 +22,9 @@ Reference:
   Dynamics, 2017.
 - Williams et al., "Information Theoretic MPC for Model-Based Reinforcement
   Learning", ICRA 2017.
+- Williams et al., "Information-Theoretic Model Predictive Control: Theory
+  and Applications to Autonomous Driving", IEEE Transactions on Robotics,
+  2018.
 
 """
 import math
@@ -48,6 +51,7 @@ DT = 0.1  # [s] control period
 HORIZON = 25  # [steps] look-ahead of the plan (2.5 s)
 N_SAMPLES = 300  # sampled control sequences per control step
 LAMBDA = 20.0  # temperature: smaller trusts the best samples more
+GAMMA = 5.0  # weight of the control cost, well below LAMBDA (see mppi_control)
 NOISE_STD = np.array([1.0, np.radians(20.0)])  # (accel, steer rate) noise
 CONTROL_LIMITS = np.array([MAX_ACCEL, MAX_STEER_RATE])
 
@@ -189,9 +193,12 @@ def mppi_control(state: np.ndarray, plan: np.ndarray, course: np.ndarray,
     noise = rng.normal(0.0, NOISE_STD, size=(N_SAMPLES, HORIZON, 2))
     samples = rollout(state, plan + noise)
     costs = trajectory_costs(samples, course, obstacles)
-    # control cost from the information-theoretic derivation:
-    # lambda * u_t^T Sigma^-1 noise_t, summed over the horizon
-    costs += LAMBDA * np.einsum("tc,ktc->k", plan / NOISE_STD ** 2, noise)
+    # control cost gamma * u_t^T Sigma^-1 noise_t, summed over the horizon.
+    # With gamma = lambda, as first derived, the weights treat the samples
+    # as if drawn around zero control: a plan several noise widths from
+    # zero is pushed back to zero every step, and one sample takes nearly
+    # all the weight. Williams et al. 2018 use gamma = lambda (1 - alpha).
+    costs += GAMMA * np.einsum("tc,ktc->k", plan / NOISE_STD ** 2, noise)
     weights = mppi_weights(costs, LAMBDA)
     plan = plan + np.einsum("k,ktc->tc", weights, noise)
     return np.clip(plan, -CONTROL_LIMITS, CONTROL_LIMITS), samples
