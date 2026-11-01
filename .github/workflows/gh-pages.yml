@@ -2,7 +2,7 @@ name: GitHub Pages site update
 on:
   push:
     branches:
-    - master
+    - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,7 +16,7 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v7
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
     - name: Install dependencies

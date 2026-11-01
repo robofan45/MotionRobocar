@@ -111,7 +111,7 @@ def solve_on_line(lines: list[Line], k: int, radius: float,
     point furthest along the direction target. None if there is none."""
     point, direction = lines[k]
     dot = float(point @ direction)
-    discriminant = dot ** 2 + radius ** 2 - point @ point
+    discriminant = dot ** 2 + radius ** 2 - float(point @ point)
     if discriminant < 0.0:
         return None  # the speed limit circle misses this line
     # the part of the line inside the speed limit circle: t_left..t_right

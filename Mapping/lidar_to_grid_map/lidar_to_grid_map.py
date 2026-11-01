@@ -5,6 +5,7 @@ LIDAR to 2D grid map example
 """
 
 import math
+import pathlib
 from collections import deque
 
 import matplotlib.pyplot as plt
@@ -208,7 +209,8 @@ def main():
     """
     print(__file__, "start")
     xy_resolution = 0.02  # x-y grid resolution
-    ang, dist = file_read("lidar01.csv")
+    # next to this file, so the demo runs from any working directory
+    ang, dist = file_read(pathlib.Path(__file__).with_name("lidar01.csv"))
     ox = np.sin(ang) * dist
     oy = np.cos(ang) * dist
     occupancy_map, min_x, max_x, min_y, max_y, xy_resolution = \

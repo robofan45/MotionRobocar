@@ -128,11 +128,12 @@ class FlowField:
     def follow_vectors(self):
         curr_x, curr_y = self.start_pt
         while curr_x is not None and curr_y is not None:
-            curr_x, curr_y = self.vector_field[(curr_x, curr_y)]
-
+            # plot before stepping: the goal's vector is (None, None)
             if show_animation:
                 plt.plot(curr_x, curr_y, "b*")
                 plt.pause(0.001)
+
+            curr_x, curr_y = self.vector_field[(curr_x, curr_y)]
 
         if show_animation:
             plt.show()
