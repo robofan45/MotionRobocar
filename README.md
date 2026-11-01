@@ -7,6 +7,7 @@ Owned and maintained by **Mahim Trivedi**.
 
 # Table of Contents
    * [What is this?](#what-is-python-robotics-projects)
+   * [Standalone projects](#standalone-projects)
    * [How it works](#how-it-works)
    * [Requirements](#requirements-to-run-the-code)
    * [Documentation](#documentation-textbook)
@@ -92,6 +93,22 @@ See this documentation for more details:
 
 - [Getting Started — Python Robotics Projects documentation](docs/modules/0_getting_started/1_what_is_python_robotics_main.rst)
 
+
+# Standalone projects
+
+Seven of the algorithms are also published as standalone projects. Each one has an installable
+package, a test suite that CI runs on Linux, macOS and Windows, and an IEEE-style technical report
+(PDF and Word) with measurements and a full bibliography.
+
+| Algorithm | Repository | Report |
+|---|---|---|
+| [Model predictive path integral (MPPI) control](#model-predictive-path-integral-mppi-control) | [robofan45/mppi-control](https://github.com/robofan45/mppi-control) | [PDF](https://github.com/robofan45/mppi-control/blob/main/docs/report.pdf) |
+| [iLQR trajectory optimization](#ilqr-trajectory-optimization) | [robofan45/ilqr-trajectory-optimization](https://github.com/robofan45/ilqr-trajectory-optimization) | [PDF](https://github.com/robofan45/ilqr-trajectory-optimization/blob/main/docs/report.pdf) |
+| [Control barrier function safety filter](#control-barrier-function-safety-filter) | [robofan45/cbf-safety-filter](https://github.com/robofan45/cbf-safety-filter) | [PDF](https://github.com/robofan45/cbf-safety-filter/blob/main/docs/report.pdf) |
+| [Monte Carlo localization with a lidar](#monte-carlo-localization-with-a-lidar) | [robofan45/monte-carlo-localization](https://github.com/robofan45/monte-carlo-localization) | [PDF](https://github.com/robofan45/monte-carlo-localization/blob/main/docs/report.pdf) |
+| [Interacting multiple model (IMM) filter](#interacting-multiple-model-imm-filter) | [robofan45/imm-filter](https://github.com/robofan45/imm-filter) | [PDF](https://github.com/robofan45/imm-filter/blob/main/docs/report.pdf) |
+| [Multi-object tracking](#multi-object-tracking) | [robofan45/multi-object-tracking](https://github.com/robofan45/multi-object-tracking) | [PDF](https://github.com/robofan45/multi-object-tracking/blob/main/docs/report.pdf) |
+| [ORCA multi-robot collision avoidance](#orca-multi-robot-collision-avoidance) | [robofan45/orca-collision-avoidance](https://github.com/robofan45/orca-collision-avoidance) | [PDF](https://github.com/robofan45/orca-collision-avoidance/blob/main/docs/report.pdf) |
 
 # How it works
 
@@ -313,6 +330,7 @@ Reference
 **How it works:** The robot does not know where it starts, so the particles (guesses of its pose) begin spread over the whole floor plan. Each step every particle moves with the noisy odometry and is weighted by how well the lidar scan, placed at its pose, lines up with the walls: every beam should end near a wall, and the distance to the nearest wall is read from a distance map computed once. Resampling multiplies the good guesses and the cloud collapses onto the robot. When the scans suddenly fit worse than they used to, some particles are swapped for random ones, so a cloud that settled on the wrong place can still find the right one (Augmented MCL). Red dots: particles. Cyan dots: lidar hits. Blue: the true pose. Green: the estimate.
 
 - [sample code](Localization/monte_carlo_localization/monte_carlo_localization.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/monte-carlo-localization)
 
 Reference
 
@@ -327,6 +345,7 @@ Reference
 **How it works:** Only the position of a vehicle is measured while it drives straight, turns left, drives straight and turns right. No single motion model fits all of that, so three Kalman filters run side by side, one per model (straight, left turn, right turn), each with a probability. Every step the filters' estimates are mixed by how likely a switch between models is, each filter predicts with its own model and is corrected by the measurement, the models that predicted well gain probability, and the output is the probability-weighted blend. Left: the truth (black), the measurements (grey), the IMM estimate (red) and a single constant-velocity filter tuned for its lowest error (blue dashed). Right: the model probabilities; the shading shows the true motion.
 
 - [sample code](Localization/imm_filter/imm_filter.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/imm-filter)
 
 Reference
 
@@ -397,6 +416,7 @@ This is a 2D rectangle fitting for vehicle detection.
 **How it works:** Five cars cross the sensor's view. Each scan misses some cars and adds a few false detections (clutter). Every track is a constant-velocity Kalman filter. Each scan the tracks are predicted forward, every track-detection pair is scored by how likely the detection is under the track's prediction (pairs that are too unlikely are ruled out), and the Hungarian algorithm pairs them so that as many as possible match at the lowest total score. Detections left over start tentative tracks (hollow circles); a track is confirmed after three hits and gets an ID, and a track that keeps being missed is deleted. Grey bands: the true paths. Crosses: detections. Coloured: confirmed tracks with their IDs.
 
 - [sample code](Mapping/multi_object_tracking/multi_object_tracking.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/multi-object-tracking)
 
 Reference
 
@@ -759,6 +779,7 @@ Reference
 **How it works:** Ten robots on a circle must each reach the point opposite, so they all meet in the middle. Every step each robot chooses its velocity on its own: for each neighbour it works out which velocities would collide within 3 s, and keeps the half of all velocities that avoids that, with each robot of a pair doing half of the avoiding. A small linear program then picks, inside all these half-planes and the speed limit, the velocity closest to the one heading straight for the goal. Robots in perfect symmetry would stall in a ring, so every robot keeps slightly to the right and the crowd flows through like a roundabout. Crosses: the goals. Arrows: the velocities.
 
 - [sample code](PathPlanning/ORCA/orca.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/orca-collision-avoidance)
 
 Reference
 
@@ -868,6 +889,7 @@ Reference
 **How it works:** Every 0.1 s MPPI tries 300 random variations of its planned acceleration and steering sequence, simulates the car 2.5 s ahead with each one, and scores the trajectories: stay near the course, keep the target speed along the course (raw speed would reward circling at full speed), keep clear of the obstacles. The plan moves toward the cheap samples, each weighted by exp(-cost / λ); its first command is applied and the plan shifts one step. It needs no derivatives, so a cost can be as blunt as "hitting an obstacle costs 10,000". The steering angle is part of the car's state and MPPI samples how fast it changes, so the wheel turns smoothly. Grey: sampled trajectories. Green: the plan. Blue: the path driven. Red circles: obstacles.
 
 - [sample code](PathTracking/mppi_control/mppi_control.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/mppi-control)
 
 Reference
 
@@ -882,6 +904,7 @@ Reference
 **How it works:** The car starts at rest and must stop at the goal pose, 10 m ahead and 7 m to the left, facing left, using as little acceleration and steering as possible. Starting from a car that does nothing, each iteration linearises the car model around the current trajectory, solves that simpler problem backwards in time (which gives every step a correction and a feedback gain), and rolls the corrected controls through the real model, halving the step until the cost drops. Grey: earlier iterations. Red: the current trajectory. Then the car drives the result.
 
 - [sample code](PathTracking/ilqr/ilqr.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/ilqr-trajectory-optimization)
 
 Reference
 
@@ -896,6 +919,7 @@ Reference
 **How it works:** The robot's own controller heads straight for the goal (grey dashed line) and would drive into the first obstacle. A safety filter changes each command as little as possible so that every obstacle's barrier, the squared distance to the obstacle minus its squared radius, may shrink only in proportion to its size: it slows down as it nears zero and never crosses it. That is a tiny quadratic program, solved exactly every step, and a command that is already safe passes unchanged. Grey arrow: the nominal command. Blue arrow: the safe command. Right: the clearance to each obstacle reaches zero but never goes below it.
 
 - [sample code](PathTracking/control_barrier_function/control_barrier_function.py)
+- [standalone project, with tests and a technical report](https://github.com/robofan45/cbf-safety-filter)
 
 Reference
 

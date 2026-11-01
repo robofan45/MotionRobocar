@@ -14,5 +14,7 @@ Localization is the ability of a robot to know its position and orientation with
    unscented_kalman_filter_localization/unscented_kalman_filter_localization
    histogram_filter_localization/histogram_filter_localization
    particle_filter_localization/particle_filter_localization
+   monte_carlo_localization/monte_carlo_localization
+   imm_filter/imm_filter
 
 
