@@ -78,7 +78,7 @@ def boundary_and_obstacles(start, goal, top_vertex, bottom_vertex, obs_number):
 
 def find_neighbor(node, ob, closed):
     # Convert obstacles to a set for faster lookup
-    ob_set = set(map(tuple, ob.tolist()))  
+    ob_set = set(map(tuple, ob.tolist()))
     neighbor_set = set()
 
     # Generate neighbors within the 3x3 grid around the node

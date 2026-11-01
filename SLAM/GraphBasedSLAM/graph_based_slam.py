@@ -187,7 +187,7 @@ def graph_based_slam(x_init, hz):
             x_opt[0:3, i] += dx[i * 3:i * 3 + 3, 0]
 
         diff = (dx.T @ dx)[0, 0]
-        print("iteration: %d, diff: %f" % (itr + 1, diff))
+        print(f"iteration: {itr + 1}, diff: {diff:f}")
         if diff < 1.0e-5:
             break
 

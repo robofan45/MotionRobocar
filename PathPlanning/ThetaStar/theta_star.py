@@ -46,7 +46,7 @@ class ThetaStarPlanner:
             return str(self.x) + "," + str(self.y) + "," + str(
                 self.cost) + "," + str(self.parent_index)
 
-    def planning(self, sx, sy, gx, gy): 
+    def planning(self, sx, sy, gx, gy):
         """
         Theta star path search
 
@@ -156,7 +156,7 @@ class ThetaStarPlanner:
                 else:
                     if open_set[n_id].cost > node.cost:
                         # This path is the best until now. record it
-                        open_set[n_id] = node 
+                        open_set[n_id] = node
 
 
         if not goal_found:
