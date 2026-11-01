@@ -103,5 +103,5 @@ Robotics consists of several essential components:
 #. Power Supply – Provides energy to run the robot (e.g., Batteries, Solar power).
 #. Software & Algorithms – Allow the robot to function and make intelligent decisions (e.g., ROS, Machine learning models, Localization, Mapping, Path planning, Control).
 
-This project, `MotionRobocar`, focuses on the software and algorithms part of robotics.
+This project, `Python Robotics Projects`, focuses on the software and algorithms part of robotics.
 If you are interested in `Sensors` hardware, you can check :ref:`Internal Sensors for Robots` or :ref:`External Sensors for Robots`.

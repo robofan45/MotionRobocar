@@ -1,12 +1,14 @@
-# MotionRobocar
+# Python Robotics Projects
 
 Python codes and [textbook](docs/index_main.rst) for robotics algorithm.
+
+Based on [PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics) by Atsushi Sakai and contributors.
 
 Owned and maintained by **Mahim Trivedi**.
 
 
 # Table of Contents
-   * [What is this?](#what-is-motionrobocar)
+   * [What is this?](#what-is-python-robotics-projects)
    * [How it works](#how-it-works)
    * [Requirements](#requirements-to-run-the-code)
    * [Documentation](#documentation-textbook)
@@ -69,9 +71,9 @@ Owned and maintained by **Mahim Trivedi**.
    * [Support](#support)
    * [Owner and maintainer](#owner-and-maintainer)
 
-# What is MotionRobocar?
+# What is Python Robotics Projects?
 
-MotionRobocar is a Python code collection and a [textbook](docs/index_main.rst) of robotics algorithms.
+Python Robotics Projects is a Python code collection and a [textbook](docs/index_main.rst) of robotics algorithms.
 
 Features:
 
@@ -83,7 +85,7 @@ Features:
 
 See this documentation for more details:
 
-- [Getting Started — MotionRobocar documentation](docs/modules/0_getting_started/1_what_is_python_robotics_main.rst)
+- [Getting Started — Python Robotics Projects documentation](docs/modules/0_getting_started/1_what_is_python_robotics_main.rst)
 
 
 # How it works
@@ -157,7 +159,7 @@ This README only shows some examples of this project.
 
 If you are interested in other examples or mathematical backgrounds of each algorithm, 
 
-You can check the full documentation (textbook) in the docs folder: [Welcome to MotionRobocar’s documentation\! — MotionRobocar documentation](docs/index_main.rst)
+You can check the full documentation (textbook) in the docs folder: [Welcome to the Python Robotics Projects documentation\! — Python Robotics Projects documentation](docs/index_main.rst)
 
 # How to use
 
@@ -904,13 +906,13 @@ MIT
 
 If this project helps your robotics project, please let me know with creating an issue.
 
-Your robot's video, which is using MotionRobocar, is very welcome!!
+Your robot's video, which is using Python Robotics Projects, is very welcome!!
 
 # Contribution
 
 Any contribution is welcome!! 
 
-Please check this document:[How To Contribute — MotionRobocar documentation](docs/modules/0_getting_started/3_how_to_contribute_main.rst)
+Please check this document:[How To Contribute — Python Robotics Projects documentation](docs/modules/0_getting_started/3_how_to_contribute_main.rst)
 
 # <a id="support"></a>Supporting this project
 
@@ -918,4 +920,4 @@ If you would like to support this project, please contact us by creating an issu
 
 # Owner and maintainer
 
-MotionRobocar is owned and maintained by Mahim Trivedi.
+Python Robotics Projects is owned and maintained by Mahim Trivedi.

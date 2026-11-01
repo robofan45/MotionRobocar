@@ -4,7 +4,7 @@ How to run sample codes
 -------------------------
 
 In this chapter, we will explain the setup process for running each sample code
-in MotionRobocar and describe the contents of each directory.
+in Python Robotics Projects and describe the contents of each directory.
 
 Steps to setup and run sample codes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,7 +21,7 @@ Anaconda or Miniconda to use `conda`_ command.
 
 .. code-block::
 
-    >$ cd MotionRobocar
+    >$ cd Python-Robotics-Projects
 
 
 4. Install the required libraries.
@@ -68,7 +68,7 @@ Please refer to the `Directory structure`_ section for more details on the conte
 Directory structure
 ~~~~~~~~~~~~~~~~~~~~
 
-The top-level directory structure of MotionRobocar is as follows:
+The top-level directory structure of Python Robotics Projects is as follows:
 
 Sample codes directories:
 
@@ -84,7 +84,7 @@ Sample codes directories:
 
 Other directories:
 
-- ``docs`` : This directory contains the documentation of MotionRobocar.
+- ``docs`` : This directory contains the documentation of Python Robotics Projects.
 - ``requirements`` : This directory contains the requirements management files.
 - ``tests`` : This directory contains the unit test files.
 - ``utils`` : This directory contains utility functions used in some sample codes in common.

@@ -1,6 +1,6 @@
-## MotionRobocar Documentation
+## Python Robotics Projects Documentation
 
-This folder contains documentation for the MotionRobocar project.
+This folder contains documentation for the Python Robotics Projects project.
 
 
 ### Build the Documentation

@@ -17,7 +17,7 @@ Please check following items before contributing:
 Understanding this project
 ---------------------------
 
-Please check this :ref:`What is MotionRobocar?` section
+Please check this :ref:`What is Python Robotics Projects?` section
 to understand the philosophies of this project.
 
 Check your Python version.
@@ -267,7 +267,7 @@ This doc `submit a pull request`_ can be helpful to submit a pull request.
 
 Adding the missed documentations for existing examples is also great contribution.
 
-If you check the MotionRobocar docs, you can notice that some of the examples
+If you check the Python Robotics Projects docs, you can notice that some of the examples
 only have a simulation gif or short overview descriptions or just TBD.,
 but no detailed algorithm or mathematical description.
 These documents need to be improved.

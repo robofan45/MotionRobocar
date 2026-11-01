@@ -3,7 +3,7 @@
 Point cloud Sampling
 ----------------------
 
-This sections explains point cloud sampling algorithms in MotionRobocar.
+This sections explains point cloud sampling algorithms in Python Robotics Projects.
 
 Point clouds are two-dimensional and three-dimensional based data
 acquired by external sensors like LIDAR, cameras, etc.
