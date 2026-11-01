@@ -12,9 +12,6 @@ def run_demo(monkeypatch):
     monkeypatch.setattr(m, "show_final", False)
     monkeypatch.setattr(m, "show_animation", False)
     monkeypatch.setattr(m, "show_ellipse", False)
-    # main() changes the module-level x_0 in place (see the xfail test
-    # below), so every run starts from its own copy of the initial state.
-    monkeypatch.setattr(m, "x_0", X_0.copy())
     return m.main()
 
 
@@ -25,7 +22,7 @@ def position_rmse(a, b):
 def test_estimate_is_closer_to_truth_than_measurements(monkeypatch):
     x_true, x_est, z = run_demo(monkeypatch)
     est_rmse = position_rmse(x_est, x_true)
-    assert est_rmse < 0.2  # seeded run: 0.097 m
+    assert est_rmse < 0.1  # seeded run: 0.052 m
     assert est_rmse < position_rmse(z, x_true)  # raw GPS: 0.128 m
 
 
