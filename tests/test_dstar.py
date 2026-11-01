@@ -63,7 +63,7 @@ def distances_to_goal(blocked):
 
 
 def test_path_avoids_obstacles_and_moves_one_cell_at_a_time(path):
-    cells = drop_repeats(path)  # see the repeated point xfail below
+    cells = path
     assert cells[0] == START
     for (x0, y0), (x1, y1) in zip(cells, cells[1:]):
         assert max(abs(x1 - x0), abs(y1 - y0)) == 1, "steps must be 1 cell"
@@ -74,7 +74,7 @@ def test_path_avoids_obstacles_and_moves_one_cell_at_a_time(path):
 
 
 def test_robot_follows_shortest_paths_of_the_map_it_knows(path):
-    cells = drop_repeats(path)
+    cells = path
     old_map = distances_to_goal(static_obstacles())
     new_map = distances_to_goal(static_obstacles() | NEW_WALL)
 
@@ -98,9 +98,6 @@ def test_path_ends_at_goal(path):
     assert path[-1] == GOAL
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="after the new wall is found, every cell of the "
-                          "path is listed twice")
 def test_path_has_no_repeated_points(path):
     assert path == drop_repeats(path)
 
