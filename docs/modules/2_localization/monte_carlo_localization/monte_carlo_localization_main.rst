@@ -32,5 +32,5 @@ This algorithm is also published as a standalone project, `robofan45/monte-carlo
 Reference
 ~~~~~~~~~
 
--  S. Thrun, W. Burgard and D. Fox, "Probabilistic Robotics", MIT Press, 2005
--  F. Dellaert, D. Fox, W. Burgard and S. Thrun, "Monte Carlo Localization for Mobile Robots", ICRA, 1999
+-  S\. Thrun, W. Burgard and D. Fox, "Probabilistic Robotics", MIT Press, 2005
+-  F\. Dellaert, D. Fox, W. Burgard and S. Thrun, "Monte Carlo Localization for Mobile Robots", ICRA, 1999

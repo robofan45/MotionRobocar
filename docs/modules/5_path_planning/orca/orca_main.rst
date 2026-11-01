@@ -28,5 +28,5 @@ This algorithm is also published as a standalone project, `robofan45/orca-collis
 Reference
 ~~~~~~~~~
 
--  J. van den Berg, S. J. Guy, M. Lin and D. Manocha, "Reciprocal n-Body Collision Avoidance", Robotics Research: The 14th International Symposium ISRR, Springer, 2011
+-  J\. van den Berg, S. J. Guy, M. Lin and D. Manocha, "Reciprocal n-Body Collision Avoidance", Robotics Research: The 14th International Symposium ISRR, Springer, 2011
 -  `RVO2 Library <https://gamma.cs.unc.edu/RVO2/>`_, the authors' reference implementation

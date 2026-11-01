@@ -37,5 +37,5 @@ This algorithm is also published as a standalone project, `robofan45/ilqr-trajec
 Reference
 ~~~~~~~~~
 
--  W. Li and E. Todorov, "Iterative Linear Quadratic Regulator Design for Nonlinear Biological Movement Systems", ICINCO, 2004
--  Y. Tassa, T. Erez and E. Todorov, "Synthesis and Stabilization of Complex Behaviors through Online Trajectory Optimization", IROS, 2012
+-  W\. Li and E. Todorov, "Iterative Linear Quadratic Regulator Design for Nonlinear Biological Movement Systems", ICINCO, 2004
+-  Y\. Tassa, T. Erez and E. Todorov, "Synthesis and Stabilization of Complex Behaviors through Online Trajectory Optimization", IROS, 2012

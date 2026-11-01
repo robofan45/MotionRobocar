@@ -33,5 +33,5 @@ This algorithm is also published as a standalone project, `robofan45/imm-filter 
 Reference
 ~~~~~~~~~
 
--  H. A. P. Blom and Y. Bar-Shalom, "The Interacting Multiple Model Algorithm for Systems with Markovian Switching Coefficients", IEEE Transactions on Automatic Control, 1988
--  Y. Bar-Shalom, X. R. Li and T. Kirubarajan, "Estimation with Applications to Tracking and Navigation", Wiley, 2001
+-  H\. A. P. Blom and Y. Bar-Shalom, "The Interacting Multiple Model Algorithm for Systems with Markovian Switching Coefficients", IEEE Transactions on Automatic Control, 1988
+-  Y\. Bar-Shalom, X. R. Li and T. Kirubarajan, "Estimation with Applications to Tracking and Navigation", Wiley, 2001

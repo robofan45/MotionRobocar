@@ -28,5 +28,5 @@ This algorithm is also published as a standalone project, `robofan45/cbf-safety-
 Reference
 ~~~~~~~~~
 
--  A. D. Ames, X. Xu, J. W. Grizzle and P. Tabuada, "Control Barrier Function Based Quadratic Programs for Safety Critical Systems", IEEE Transactions on Automatic Control, 2017
--  A. D. Ames et al., "Control Barrier Functions: Theory and Applications", European Control Conference, 2019
+-  A\. D. Ames, X. Xu, J. W. Grizzle and P. Tabuada, "Control Barrier Function Based Quadratic Programs for Safety Critical Systems", IEEE Transactions on Automatic Control, 2017
+-  A\. D. Ames et al., "Control Barrier Functions: Theory and Applications", European Control Conference, 2019
