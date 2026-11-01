@@ -53,9 +53,6 @@ def test_closed_loop_is_stable():
     assert np.all(np.abs(eig_values) < 1.0)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="solve_dare multiplies element-wise "
-                   "(*) instead of using matrix products (@), so its result "
-                   "does not solve the Riccati equation")
 def test_solve_dare_matches_scipy():
     planner = m.LQRPlanner()
     A, B = planner.get_system_model()
