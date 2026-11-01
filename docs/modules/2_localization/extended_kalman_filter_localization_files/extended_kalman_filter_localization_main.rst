@@ -126,7 +126,10 @@ Its Jacobian matrix is
 
 :math:`\begin{equation*} J_f = \begin{bmatrix} \frac{\partial x'}{\partial x}& \frac{\partial x'}{\partial y} & \frac{\partial x'}{\partial \phi} & \frac{\partial x'}{\partial v}\\ \frac{\partial y'}{\partial x}& \frac{\partial y'}{\partial y} & \frac{\partial y'}{\partial \phi} & \frac{\partial y'}{\partial v}\\ \frac{\partial \phi'}{\partial x}& \frac{\partial \phi'}{\partial y} & \frac{\partial \phi'}{\partial \phi} & \frac{\partial \phi'}{\partial v}\\ \frac{\partial v'}{\partial x}& \frac{\partial v'}{\partial y} & \frac{\partial v'}{\partial \phi} & \frac{\partial v'}{\partial v} \end{bmatrix} \end{equation*}`
 
-:math:`\begin{equation*} 　= \begin{bmatrix} 1& 0 & -v \sin(\phi) \Delta t & \cos(\phi) \Delta t\\ 0 & 1 & v \cos(\phi) \Delta t & \sin(\phi) \Delta t\\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \end{equation*}`
+:math:`\begin{equation*} 　= \begin{bmatrix} 1& 0 & -v \sin(\phi) \Delta t & 0\\ 0 & 1 & v \cos(\phi) \Delta t & 0\\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix} \end{equation*}`
+
+The velocity :math:`v` in :math:`f` is the input, not the velocity state,
+so the last column (the derivatives by the velocity state) is zero.
 
 Observation Model
 ~~~~~~~~~~~~~~~~~
@@ -215,7 +218,10 @@ Its Jacobian matrix is
 
 :math:`\begin{equation*} J_f = \begin{bmatrix} \frac{\partial x'}{\partial x}& \frac{\partial x'}{\partial y} & \frac{\partial x'}{\partial \phi} & \frac{\partial x'}{\partial v} & \frac{\partial x'}{\partial s}\\ \frac{\partial y'}{\partial x}& \frac{\partial y'}{\partial y} & \frac{\partial y'}{\partial \phi} & \frac{\partial y'}{\partial v} & \frac{\partial y'}{\partial s}\\ \frac{\partial \phi'}{\partial x}& \frac{\partial \phi'}{\partial y} & \frac{\partial \phi'}{\partial \phi} & \frac{\partial \phi'}{\partial v} & \frac{\partial \phi'}{\partial s}\\ \frac{\partial v'}{\partial x}& \frac{\partial v'}{\partial y} & \frac{\partial v'}{\partial \phi} & \frac{\partial v'}{\partial v} & \frac{\partial v'}{\partial s} \\ \frac{\partial s'}{\partial x}& \frac{\partial s'}{\partial y} & \frac{\partial s'}{\partial \phi} & \frac{\partial s'}{\partial v} & \frac{\partial s'}{\partial s} \end{bmatrix} \end{equation*}`
 
-:math:`\begin{equation*} 　= \begin{bmatrix} 1& 0 & -v s \sin(\phi) \Delta t & s \cos(\phi) \Delta t & \cos(\phi) v \Delta t\\ 0 & 1 & v s \cos(\phi) \Delta t & s \sin(\phi) \Delta t & v \sin(\phi) \Delta t\\ 0 & 0 & 1 & 0  & 0 \\ 0 & 0 & 0 & 1 & 0 \end{bmatrix} \end{equation*}`
+:math:`\begin{equation*} 　= \begin{bmatrix} 1& 0 & -v s \sin(\phi) \Delta t & 0 & \cos(\phi) v \Delta t\\ 0 & 1 & v s \cos(\phi) \Delta t & 0 & v \sin(\phi) \Delta t\\ 0 & 0 & 1 & 0  & 0 \\ 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 \end{bmatrix} \end{equation*}`
+
+As above, :math:`v` in :math:`f` is the input, so the column of the
+velocity state is zero.
 
 
 Observation Model

@@ -87,28 +87,27 @@ def jacob_f(x, u):
     """
     Jacobian of Motion Model
 
-    motion model
+    motion model (v and omega are the inputs in u)
     x_{t+1} = x_t+v*s*dt*cos(yaw)
     y_{t+1} = y_t+v*s*dt*sin(yaw)
     yaw_{t+1} = yaw_t+omega*dt
-    v_{t+1} = v{t}
+    v_{t+1} = v
     s_{t+1} = s{t}
     so
     dx/dyaw = -v*s*dt*sin(yaw)
-    dx/dv = dt*s*cos(yaw)
     dx/ds = dt*v*cos(yaw)
     dy/dyaw = v*s*dt*cos(yaw)
-    dy/dv = dt*s*sin(yaw)
     dy/ds = dt*v*sin(yaw)
+    and nothing depends on the velocity state v_t (that column is zero)
     """
     yaw = x[2, 0]
     v = u[0, 0]
     s = x[4, 0]
     jF = np.array([
-        [1.0, 0.0, -DT * v * s * math.sin(yaw), DT * s * math.cos(yaw), DT * v * math.cos(yaw)],
-        [0.0, 1.0, DT * v * s * math.cos(yaw), DT * s * math.sin(yaw), DT * v * math.sin(yaw)],
+        [1.0, 0.0, -DT * v * s * math.sin(yaw), 0.0, DT * v * math.cos(yaw)],
+        [0.0, 1.0, DT * v * s * math.cos(yaw), 0.0, DT * v * math.sin(yaw)],
         [0.0, 0.0, 1.0, 0.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 1.0]])
     return jF
 

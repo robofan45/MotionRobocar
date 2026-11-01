@@ -43,10 +43,6 @@ def test_velocity_correction_two_runs_give_identical_results(monkeypatch):
         np.testing.assert_array_equal(a, b)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "jacob_f() treats velocity as a persistent state (dx/dv = dt*cos(yaw), "
-    "dv/dv = 1), but motion_model() takes the velocity from the input "
-    "(F[3, 3] = 0), so the Jacobian does not match the motion model"))
 @pytest.mark.parametrize("module, x", [
     pytest.param(m, [1.0, 2.0, 0.4, 0.7], id="ekf"),
     pytest.param(mv, [1.0, 2.0, 0.4, 0.7, 0.95], id="velocity_correction"),
