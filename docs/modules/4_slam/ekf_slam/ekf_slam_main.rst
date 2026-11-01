@@ -161,7 +161,7 @@ truth and dead reckoning estimates of the pose.
 uncertainty of the EKF. At each time step, the uncertainty in the system
 grows by the covariance of the pose, :math:`Cx`.
 
-:math:`P = G^TPG + Cx`
+:math:`P = GPG^T + Cx`
 
 Notice this uncertainty is only growing with respect to the pose, not
 the landmarks.
@@ -181,7 +181,7 @@ the landmarks.
         xEst[0:STATE_SIZE] = motion_model(xEst[0:STATE_SIZE], u)
         # Fx is an an identity matrix of size (STATE_SIZE)
         # sigma = G*sigma*G.T + Noise
-        PEst = G.T @ PEst @ G + Fx.T @ Cx @ Fx
+        PEst = G @ PEst @ G.T + Fx.T @ Cx @ Fx
         return xEst, PEst
 
 .. code:: ipython3

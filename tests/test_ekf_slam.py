@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import pytest
 
 import conftest  # Add root path to sys.path
 from SLAM.EKFSLAM import ekf_slam as m
@@ -70,9 +69,6 @@ def test_observation_jacobian_matches_range_bearing_model():
         np.testing.assert_allclose(h, numeric_jacobian(observe, X), atol=1e-8)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
-    "ekf_slam() predicts the covariance as G.T @ P @ G instead of "
-    "G @ P @ G.T, so heading uncertainty is not propagated into position"))
 def test_prediction_propagates_covariance_with_motion_jacobian():
     x = X[:m.STATE_SIZE].copy()
     p = np.array([[0.1, 0.0, 0.02], [0.0, 0.2, 0.03], [0.02, 0.03, 0.05]])
