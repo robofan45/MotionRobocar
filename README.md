@@ -19,12 +19,15 @@ Owned and maintained by **Mahim Trivedi**.
       * [GPS/IMU Fusion Localization with Bias Estimation](#gpsimu-fusion-localization-with-bias-estimation)
       * [Particle filter localization](#particle-filter-localization)
       * [Histogram filter localization](#histogram-filter-localization)
+      * [Monte Carlo localization with a lidar](#monte-carlo-localization-with-a-lidar)
+      * [Interacting multiple model (IMM) filter](#interacting-multiple-model-imm-filter)
    * [Mapping](#mapping)
       * [Gaussian grid map](#gaussian-grid-map)
       * [Ray casting grid map](#ray-casting-grid-map)
       * [Lidar to grid map](#lidar-to-grid-map)
       * [k-means object clustering](#k-means-object-clustering)
       * [Rectangle fitting](#rectangle-fitting)
+      * [Multi-object tracking](#multi-object-tracking)
    * [SLAM](#slam)
       * [Iterative Closest Point (ICP) Matching](#iterative-closest-point-icp-matching)
       * [FastSLAM 1.0](#fastslam-10)
@@ -50,6 +53,7 @@ Owned and maintained by **Mahim Trivedi**.
       * [Reeds Shepp planning](#reeds-shepp-planning)
       * [LQR based path planning](#lqr-based-path-planning)
       * [Optimal Trajectory in a Frenet Frame](#optimal-trajectory-in-a-frenet-frame)
+      * [ORCA multi-robot collision avoidance](#orca-multi-robot-collision-avoidance)
    * [Path Tracking](#path-tracking)
       * [move to a pose control](#move-to-a-pose-control)
       * [Stanley control](#stanley-control)
@@ -57,6 +61,9 @@ Owned and maintained by **Mahim Trivedi**.
       * [Linear–quadratic regulator (LQR) speed and steering control](#linearquadratic-regulator-lqr-speed-and-steering-control)
       * [Model predictive speed and steering control](#model-predictive-speed-and-steering-control)
       * [Nonlinear Model predictive control with C-GMRES](#nonlinear-model-predictive-control-with-c-gmres)
+      * [Model predictive path integral (MPPI) control](#model-predictive-path-integral-mppi-control)
+      * [iLQR trajectory optimization](#ilqr-trajectory-optimization)
+      * [Control barrier function safety filter](#control-barrier-function-safety-filter)
    * [Arm Navigation](#arm-navigation)
       * [N joint arm to point control](#n-joint-arm-to-point-control)
       * [Arm navigation with obstacle avoidance](#arm-navigation-with-obstacle-avoidance)
@@ -227,7 +234,9 @@ flowchart LR
 The filters differ in how they store the estimate. The Extended Kalman Filter
 and GPS/IMU fusion keep one Gaussian (a mean and a covariance), the particle
 filter keeps many weighted guesses and resamples them, and the histogram filter
-keeps a probability for every grid cell.
+keeps a probability for every grid cell. Monte Carlo localization is a particle
+filter that scores its guesses with a whole lidar scan against a map, and the
+IMM filter keeps one Gaussian per motion model, each with a probability.
 
 ## Extended Kalman Filter localization
 
@@ -299,9 +308,36 @@ Reference
 
 - [PROBABILISTIC ROBOTICS](http://www.probabilistic-robotics.org/)
 
+## Monte Carlo localization with a lidar
+
+![Monte Carlo localization demo](gifs/monte_carlo_localization.gif)
+
+**How it works:** The robot does not know where it starts, so the particles (guesses of its pose) begin spread over the whole floor plan. Each step every particle moves with the noisy odometry and is weighted by how well the lidar scan, placed at its pose, lines up with the walls: every beam should end near a wall, and the distance to the nearest wall is read from a distance map computed once. Resampling multiplies the good guesses and the cloud collapses onto the robot. When the scans suddenly fit worse than they used to, some particles are swapped for random ones, so a cloud that settled on the wrong place can still find the right one (Augmented MCL). Red dots: particles. Cyan dots: lidar hits. Blue: the true pose. Green: the estimate.
+
+- [sample code](Localization/monte_carlo_localization/monte_carlo_localization.py)
+
+Reference
+
+- [PROBABILISTIC ROBOTICS](http://www.probabilistic-robotics.org/)
+
+- Monte Carlo Localization for Mobile Robots
+
+## Interacting multiple model (IMM) filter
+
+![IMM filter demo](gifs/imm_filter.gif)
+
+**How it works:** Only the position of a vehicle is measured while it drives straight, turns left, drives straight and turns right. No single motion model fits all of that, so three Kalman filters run side by side, one per model (straight, left turn, right turn), each with a probability. Every step the filters' estimates are mixed by how likely a switch between models is, each filter predicts with its own model and is corrected by the measurement, the models that predicted well gain probability, and the output is the probability-weighted blend. Left: the truth (black), the measurements (grey), the IMM estimate (red) and a single constant-velocity filter tuned for its lowest error (blue dashed). Right: the model probabilities; the shading shows the true motion.
+
+- [sample code](Localization/imm_filter/imm_filter.py)
+
+Reference
+
+- The Interacting Multiple Model Algorithm for Systems with Markovian Switching Coefficients
+
 # Mapping
 
-How it works: raw sensor points become either a grid map or a list of objects.
+How it works: raw sensor points become either a grid map or a list of objects,
+and a tracker follows the objects from scan to scan.
 
 ```mermaid
 flowchart LR
@@ -311,6 +347,9 @@ flowchart LR
     GRID --> G2["Which cells are free,<br/>blocked or unknown"]
     KM --> K2["Which points belong<br/>to which object"]
     RECT --> R2["Vehicle outlines:<br/>position, size, heading"]
+    K2 --> MOT["Follow each object<br/>from scan to scan<br/>multi-object tracking"]
+    R2 --> MOT
+    MOT --> M2["Object IDs, positions<br/>and velocities"]
 ```
 
 ## Gaussian grid map
@@ -352,6 +391,20 @@ This is a 2D object clustering with k-means algorithm.
 **How it works:** The scan is split into groups of nearby points; for each group the fitter tries many rotation angles and keeps the box whose sides fit the points best (an L-shape fit). Green lines: lidar beams from the sensor at the origin. Blue dashed boxes: the true vehicles. Red boxes: the fitted rectangles.
 
 This is a 2D rectangle fitting for vehicle detection.
+
+## Multi-object tracking
+
+![Multi-object tracking demo](gifs/multi_object_tracking.gif)
+
+**How it works:** Five cars cross the sensor's view. Each scan misses some cars and adds a few false detections (clutter). Every track is a constant-velocity Kalman filter. Each scan the tracks are predicted forward, every track-detection pair is scored by how likely the detection is under the track's prediction (pairs that are too unlikely are ruled out), and the Hungarian algorithm pairs them so that as many as possible match at the lowest total score. Detections left over start tentative tracks (hollow circles); a track is confirmed after three hits and gets an ID, and a track that keeps being missed is deleted. Grey bands: the true paths. Crosses: detections. Coloured: confirmed tracks with their IDs.
+
+- [sample code](Mapping/multi_object_tracking/multi_object_tracking.py)
+
+Reference
+
+- The Hungarian Method for the Assignment Problem
+
+- Tracking and Data Fusion: A Handbook of Algorithms
 
 # SLAM
 
@@ -428,7 +481,7 @@ flowchart TD
     PICK -->|"grid map"| GRID["Grid based search<br/>Dijkstra, A*, D*,<br/>D* Lite, potential field,<br/>coverage, PSO"]
     PICK -->|"open space"| SAMP["Sampling based<br/>PRM, RRT*,<br/>RRT* with Reeds-Shepp,<br/>LQR-RRT*"]
     PICK -->|"smooth, drivable curve"| CURVE["Curves and trajectories<br/>state lattice,<br/>quintic polynomials,<br/>Reeds-Shepp, LQR planner"]
-    PICK -->|"react while driving"| LOCAL["Local planners<br/>Dynamic Window Approach,<br/>Frenet optimal trajectory"]
+    PICK -->|"react while driving"| LOCAL["Local planners<br/>Dynamic Window Approach,<br/>Frenet optimal trajectory,<br/>ORCA for many robots"]
     GRID --> OUT["Path: x, y points<br/>(some planners also<br/>give heading and speed)"]
     SAMP --> OUT
     CURVE --> OUT
@@ -440,7 +493,8 @@ Grid based search works on a map of cells: Dijkstra and A* spread out cell by
 cell from the start until they reach the goal. Sampling based planners scatter
 random points and connect the ones with a clear line between them. Curve planners solve for a smooth path the vehicle can
 actually drive. Local planners try many short moves every time step and keep
-the best one.
+the best one; with ORCA, many robots each pick a safe velocity at once, every
+pair sharing the effort of avoiding each other.
 
 ## Dynamic Window Approach
 
@@ -700,6 +754,18 @@ Reference
 
 - [Optimal trajectory generation for dynamic street scenarios in a Frenet Frame](https://www.youtube.com/watch?v=Cj6tAQe7UCY)
 
+## ORCA multi-robot collision avoidance
+
+![ORCA demo](gifs/orca.gif)
+
+**How it works:** Ten robots on a circle must each reach the point opposite, so they all meet in the middle. Every step each robot chooses its velocity on its own: for each neighbour it works out which velocities would collide within 3 s, and keeps the half of all velocities that avoids that, with each robot of a pair doing half of the avoiding. A small linear program then picks, inside all these half-planes and the speed limit, the velocity closest to the one heading straight for the goal. Robots in perfect symmetry would stall in a ring, so every robot keeps slightly to the right and the crowd flows through like a roundabout. Crosses: the goals. Arrows: the velocities.
+
+- [sample code](PathPlanning/ORCA/orca.py)
+
+Reference
+
+- Reciprocal n-Body Collision Avoidance
+
 
 # Path Tracking
 
@@ -709,8 +775,10 @@ How it works: a feedback loop keeps the vehicle on the path.
 flowchart TD
     REF["Target<br/>a path with speeds,<br/>or a goal pose"] --> ERR["Tracking error<br/>distance from the path,<br/>heading and speed error"]
     STATE["Vehicle state<br/>position, heading, speed"] --> ERR
-    ERR --> CTRL["Controller<br/>move to a pose, Stanley,<br/>rear wheel feedback,<br/>LQR, MPC,<br/>NMPC (C-GMRES)"]
+    ERR --> CTRL["Controller<br/>move to a pose, Stanley,<br/>rear wheel feedback,<br/>LQR, MPC, MPPI, iLQR,<br/>NMPC (C-GMRES)"]
     CTRL -->|"steering and<br/>speed commands"| SIM["Vehicle model<br/>moves one time step"]
+    CTRL -.->|"optional"| SAFE["Safety filter<br/>control barrier function:<br/>the closest safe command"]
+    SAFE -.-> SIM
     SIM -->|"new state"| STATE
 ```
 
@@ -794,6 +862,46 @@ A motion planning and path tracking simulation with NMPC of C-GMRES
 Reference
 
 - [documentation](docs/modules/6_path_tracking/cgmres_nmpc/cgmres_nmpc_main.rst)
+
+## Model predictive path integral (MPPI) control
+
+![MPPI control demo](gifs/mppi_control.gif)
+
+**How it works:** Every 0.1 s MPPI tries 300 random variations of its planned acceleration and steering sequence, simulates the car 2.5 s ahead with each one, and scores the trajectories: stay near the course, keep the target speed, keep clear of the obstacles. The plan moves toward the cheap samples, each weighted by exp(-cost / λ); its first command is applied and the plan shifts one step. It needs no derivatives, so a cost can be as blunt as "hitting an obstacle costs 10,000". The steering angle is part of the car's state and MPPI samples how fast it changes, so the wheel turns smoothly. Grey: sampled trajectories. Green: the plan. Blue: the path driven. Red circles: obstacles.
+
+- [sample code](PathTracking/mppi_control/mppi_control.py)
+
+Reference
+
+- Model Predictive Path Integral Control: From Theory to Parallel Computation
+
+- Information Theoretic MPC for Model-Based Reinforcement Learning
+
+## iLQR trajectory optimization
+
+![iLQR trajectory optimization demo](gifs/ilqr.gif)
+
+**How it works:** The car starts at rest and must stop at the goal pose, 10 m ahead and 7 m to the left, facing left, using as little acceleration and steering as possible. Starting from a car that does nothing, each iteration linearises the car model around the current trajectory, solves that simpler problem backwards in time (which gives every step a correction and a feedback gain), and rolls the corrected controls through the real model, halving the step until the cost drops. Grey: earlier iterations. Red: the current trajectory. Then the car drives the result.
+
+- [sample code](PathTracking/ilqr/ilqr.py)
+
+Reference
+
+- Iterative Linear Quadratic Regulator Design for Nonlinear Biological Movement Systems
+
+- Synthesis and Stabilization of Complex Behaviors through Online Trajectory Optimization
+
+## Control barrier function safety filter
+
+![Control barrier function safety filter demo](gifs/control_barrier_function.gif)
+
+**How it works:** The robot's own controller heads straight for the goal (grey dashed line) and would drive into the first obstacle. A safety filter changes each command as little as possible so that every obstacle's barrier, the squared distance to the obstacle minus its squared radius, may shrink only in proportion to its size: it slows down as it nears zero and never crosses it. That is a tiny quadratic program, solved exactly every step, and a command that is already safe passes unchanged. Grey arrow: the nominal command. Blue arrow: the safe command. Right: the clearance to each obstacle reaches zero but never goes below it.
+
+- [sample code](PathTracking/control_barrier_function/control_barrier_function.py)
+
+Reference
+
+- Control Barrier Functions: Theory and Applications
 
 
 # Arm Navigation
