@@ -214,7 +214,7 @@ def get_path(org_list, goal_list, coordinate):
         node = node.parent
     path_goal.append(goal_list[0].coordinate)
     path_org.reverse()
-    path = path_org + path_goal
+    path = path_org + path_goal[1:]  # both halves hold the meeting cell
     path = np.array(path)
     return path
 
