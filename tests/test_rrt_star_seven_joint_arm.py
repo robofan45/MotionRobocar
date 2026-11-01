@@ -80,8 +80,8 @@ def test1(planned):
     path, planner = planned
     start, goal = np.array(planner.start.x), np.array(planner.end.x)
 
-    # The path connects the start and goal configurations (in either order;
-    # see test_path_runs_from_start_to_goal).
+    # The path connects the start and goal configurations (the order is
+    # checked by test_path_runs_from_start_to_goal).
     ends = [path[0], path[-1]]
     assert any(np.allclose(e, start) for e in ends)
     assert any(np.allclose(e, goal) for e in ends)
@@ -98,10 +98,6 @@ def test_planning_is_reproducible(planned, monkeypatch):
     np.testing.assert_array_equal(path, planned[0])
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True, reason=(
-    "generate_final_course() calls reversed(path) and discards the result, "
-    "so the path runs from the goal to the start (and main() plots the "
-    "start configuration as the 'final configuration')"))
 def test_path_runs_from_start_to_goal(planned):
     path, planner = planned
     np.testing.assert_allclose(path[0], planner.start.x)

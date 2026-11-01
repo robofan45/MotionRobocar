@@ -220,7 +220,7 @@ class RRTStar:
             path.append(node.x)
             node = node.parent
         path.append(node.x)
-        reversed(path)
+        path.reverse()  # from the start to the goal
         return path
 
     def calc_dist_to_goal(self, x):
