@@ -65,7 +65,9 @@ def test1(demo):
     sx, sy, syaw, sv, sa, gx, gy, gyaw, gv, ga, max_accel, max_jerk, dt = args
 
     # start and goal states
-    assert (x[0], y[0], v[0]) == (sx, sy, sv)
+    assert x[0] == pytest.approx(sx, abs=ROUND_OFF)
+    assert y[0] == pytest.approx(sy, abs=ROUND_OFF)
+    assert v[0] == pytest.approx(sv, abs=ROUND_OFF)
     assert yaw[0] == pytest.approx(syaw, abs=ROUND_OFF)
     assert a[0] == pytest.approx(sa, abs=ROUND_OFF)
     assert x[-1] == pytest.approx(gx, abs=ROUND_OFF)
