@@ -45,12 +45,6 @@ def test1(demo):
     assert pc.path_length(path) >= math.dist(start, goal)
 
 
-@pytest.mark.xfail(
-    strict=True, raises=AssertionError,
-    reason="rewire() swaps a node for the end of an LQR trajectory steered "
-           "towards it, which stops short of it, but the node's children keep "
-           "trajectories that start at the old position, so the path jumps "
-           "0.13 m at one junction")
 def test_path_trajectories_start_at_their_parent(demo):
     _, planner = demo
     node = planner.node_list[planner.search_best_goal_node()]

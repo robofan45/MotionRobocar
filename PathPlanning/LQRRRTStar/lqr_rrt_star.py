@@ -132,10 +132,7 @@ class LQRRRTStar(RRTStar):
 
     def calc_new_cost(self, from_node, to_node):
 
-        wx, wy = self.lqr_planner.lqr_planning(
-            from_node.x, from_node.y, to_node.x, to_node.y, show_animation=False)
-
-        px, py, course_lengths = self.sample_path(wx, wy, self.step_size)
+        px, py, course_lengths = self.lqr_path(from_node, to_node)
 
         if not course_lengths:
             return float("inf")
@@ -181,12 +178,27 @@ class LQRRRTStar(RRTStar):
 
         return px, py, clen
 
-    def steer(self, from_node, to_node):
-
+    def lqr_path(self, from_node, to_node):
+        """
+        Sampled LQR trajectory from from_node, finished exactly at to_node:
+        LQR stops within GOAL_DIST of it, but rewire() puts the end of the
+        trajectory in place of to_node, whose children start at to_node.
+        """
         wx, wy = self.lqr_planner.lqr_planning(
             from_node.x, from_node.y, to_node.x, to_node.y, show_animation=False)
 
         px, py, course_lens = self.sample_path(wx, wy, self.step_size)
+
+        if px:
+            course_lens.append(math.hypot(to_node.x - px[-1], to_node.y - py[-1]))
+            px.append(to_node.x)
+            py.append(to_node.y)
+
+        return px, py, course_lens
+
+    def steer(self, from_node, to_node):
+
+        px, py, course_lens = self.lqr_path(from_node, to_node)
 
         if px is None:
             return None
