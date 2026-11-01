@@ -7,8 +7,8 @@ author: Mahim Trivedi
 A car follows a course and steers around obstacles placed on it. Every
 control step MPPI samples many random variations of its planned acceleration
 and steering-rate sequence, simulates the car for each one, and scores the
-trajectories: stay near the course, keep the target speed, keep clear of the
-obstacles. The plan then moves toward the low-cost samples, each weighted by
+trajectories: stay near the course, keep the target speed along the course,
+keep clear of the obstacles. The plan then moves toward the low-cost samples, each weighted by
 exp(-cost / lambda). The first command of the plan is applied and the plan
 shifts one step, ready for the next control step.
 
@@ -52,10 +52,10 @@ NOISE_STD = np.array([1.0, np.radians(20.0)])  # (accel, steer rate) noise
 CONTROL_LIMITS = np.array([MAX_ACCEL, MAX_STEER_RATE])
 
 # cost
-TARGET_SPEED = 6.0  # [m/s]
+TARGET_SPEED = 6.0  # [m/s] along the course
 W_COURSE = 1.0  # squared distance to the course
-W_SPEED = 1.0  # squared speed error
-W_CLEARANCE = 50.0  # squared intrusion into the clearance margin
+W_SPEED = 1.0  # squared error of the speed along the course
+W_CLEARANCE = 200.0  # squared intrusion into the clearance margin
 CLEARANCE_MARGIN = 1.0  # [m] extra gap kept from obstacles
 COLLISION_COST = 1e4  # per time step a sample spends inside an obstacle
 
@@ -129,23 +129,45 @@ def obstacle_gaps(states: np.ndarray, obstacles: np.ndarray) -> np.ndarray:
             - obstacles[:, 2] - CAR_RADIUS)
 
 
-def squared_distance_to_course(xy: np.ndarray,
-                               course: np.ndarray) -> np.ndarray:
-    """Squared distance (...) from each point (..., 2) to its nearest course
-    point, from |p - c|^2 = |p|^2 - 2 p.c + |c|^2 with one matrix product."""
+def nearest_course_points(xy: np.ndarray, course: np.ndarray
+                          ) -> tuple[np.ndarray, np.ndarray]:
+    """Index of the nearest course point (...) for each point (..., 2), and
+    the squared distance to it, from |p - c|^2 = |p|^2 - 2 p.c + |c|^2 with
+    one matrix product."""
     points = xy.reshape(-1, 2)
     dist_sq = (np.sum(points ** 2, axis=1)[:, None] - 2.0 * points @ course.T
                + np.sum(course ** 2, axis=1))
-    return np.clip(dist_sq.min(axis=1), 0.0, None).reshape(xy.shape[:-1])
+    nearest = np.argmin(dist_sq, axis=1)
+    closest = np.clip(dist_sq[np.arange(len(points)), nearest], 0.0, None)
+    return nearest.reshape(xy.shape[:-1]), closest.reshape(xy.shape[:-1])
+
+
+def squared_distance_to_course(xy: np.ndarray,
+                               course: np.ndarray) -> np.ndarray:
+    """Squared distance (...) from each point (..., 2) to the course."""
+    return nearest_course_points(xy, course)[1]
+
+
+def course_headings(course: np.ndarray) -> np.ndarray:
+    """Direction of travel at each course point."""
+    step = np.diff(course, axis=0)
+    heading = np.arctan2(step[:, 1], step[:, 0])
+    return np.append(heading, heading[-1])
 
 
 def trajectory_costs(states: np.ndarray, course: np.ndarray,
                      obstacles: np.ndarray) -> np.ndarray:
-    """Cost (K,) of each trajectory in states (K, T, 5)."""
+    """Cost (K,) of each trajectory in states (K, T, 5). The speed counts
+    only along the course: otherwise circling next to an obstacle at full
+    speed, crossing the course again and again, is cheaper than driving
+    around the obstacle."""
+    nearest, course_dist_sq = nearest_course_points(states[..., :2], course)
+    along = states[..., 3] * np.cos(states[..., 2]
+                                    - course_headings(course)[nearest])
     gap = obstacle_gaps(states, obstacles)
     intrusion = np.clip(CLEARANCE_MARGIN - gap, 0.0, None)
-    cost = (W_COURSE * squared_distance_to_course(states[..., :2], course)
-            + W_SPEED * (states[..., 3] - TARGET_SPEED) ** 2
+    cost = (W_COURSE * course_dist_sq
+            + W_SPEED * (along - TARGET_SPEED) ** 2
             + W_CLEARANCE * np.sum(intrusion ** 2, axis=-1)
             + COLLISION_COST * np.any(gap < 0.0, axis=-1))
     return cost.sum(axis=1)
@@ -229,9 +251,10 @@ def plot_frame(state: np.ndarray, samples: np.ndarray, plan: np.ndarray,
     plt.pause(0.001)
 
 
-def main() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def main(seed: int = 3) -> tuple[np.ndarray, np.ndarray, np.ndarray,
+                                  np.ndarray]:
     print(__file__ + " start!!")
-    rng = np.random.default_rng(3)
+    rng = np.random.default_rng(seed)
     course = make_course()
     obstacles = make_obstacles(course)
     start_yaw = math.atan2(course[1, 1] - course[0, 1],

@@ -1,6 +1,10 @@
 """
 MPPI control: the car finishes the course without touching an obstacle,
 stays near the course away from the obstacles, and respects its limits.
+
+MPPI is random, and floating-point differences between platforms change a
+run the way a different seed does, so every bound below holds with margin
+for all of seeds 0 to 11 (the worst value over those seeds is noted).
 """
 import numpy as np
 import pytest
@@ -18,21 +22,21 @@ def run():
 
 def test_car_finishes_the_course(run):
     states, controls, course, _ = run
-    assert len(controls) * m.DT < 25.0  # observed 19.5 s
-    assert np.linalg.norm(states[-1, :2] - course[-1]) < 1.0  # observed 0.13 m
+    assert len(controls) * m.DT < 25.0  # worst 21.2 s
+    assert np.linalg.norm(states[-1, :2] - course[-1]) < 2.0  # worst 1.13 m
 
 
 def test_car_never_touches_an_obstacle(run):
     states, _, _, obstacles = run
-    assert m.obstacle_gaps(states, obstacles).min() > 0.3  # observed 0.80 m
+    assert m.obstacle_gaps(states, obstacles).min() > 0.3  # worst 0.66 m
 
 
 def test_car_stays_near_the_course_away_from_obstacles(run):
     states, _, course, obstacles = run
     distance = np.sqrt(m.squared_distance_to_course(states[:, :2], course))
     clear = m.obstacle_gaps(states, obstacles).min(axis=1) > 10.0
-    assert clear.sum() > 50  # observed 77 of 196 steps
-    assert distance[clear].max() < 2.0  # observed 1.40 m
+    assert clear.sum() > 50  # worst 74 steps
+    assert distance[clear].max() < 3.0  # worst 2.00 m
 
 
 def test_steering_acceleration_and_speed_stay_within_limits(run):
@@ -41,7 +45,35 @@ def test_steering_acceleration_and_speed_stay_within_limits(run):
     assert np.abs(steer).max() <= m.MAX_STEER
     assert np.abs(np.diff(steer)).max() <= m.MAX_STEER_RATE * m.DT + 1e-9
     assert np.abs(controls[:, 0]).max() <= m.MAX_ACCEL
-    assert states[:, 3].max() < 1.1 * m.TARGET_SPEED  # observed 6.05 m/s
+    # only the speed along the course is held at TARGET_SPEED
+    assert states[:, 3].max() < 1.25 * m.TARGET_SPEED  # worst 6.87 m/s
+
+
+@pytest.mark.parametrize("seed", [0, 9])
+def test_car_does_not_circle_next_to_an_obstacle(seed, monkeypatch):
+    """With these seeds an earlier cost, which counted the raw speed, let
+    the car circle beside the first obstacle until time ran out."""
+    monkeypatch.setattr(m, "show_animation", False)
+    states, controls, _, obstacles = m.main(seed)
+    assert len(controls) * m.DT < 25.0
+    assert m.obstacle_gaps(states, obstacles).min() > 0.3
+
+
+def test_only_speed_along_the_course_counts():
+    """Driving across the course at the target speed must cost as much as
+    standing still; otherwise circling at full speed looks like progress."""
+    course = np.column_stack([np.arange(0.0, 10.0, m.COURSE_DS),
+                              np.zeros(20)])
+    no_obstacles = np.array([[100.0, 100.0, 1.0]])
+    along, across, standing = (
+        np.array([[[5.0, 0.0, yaw, speed, 0.0]]])
+        for yaw, speed in [(0.0, m.TARGET_SPEED), (np.pi / 2, m.TARGET_SPEED),
+                           (0.0, 0.0)])
+    costs = m.trajectory_costs(np.concatenate([along, across, standing]),
+                               course, no_obstacles)
+    assert costs[0] == pytest.approx(0.0, abs=1e-9)
+    assert costs[1] == pytest.approx(costs[2])
+    assert costs[2] == pytest.approx(m.W_SPEED * m.TARGET_SPEED ** 2)
 
 
 def test_squared_distance_to_course_matches_brute_force():

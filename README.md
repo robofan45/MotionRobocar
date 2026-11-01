@@ -867,7 +867,7 @@ Reference
 
 ![MPPI control demo](gifs/mppi_control.gif)
 
-**How it works:** Every 0.1 s MPPI tries 300 random variations of its planned acceleration and steering sequence, simulates the car 2.5 s ahead with each one, and scores the trajectories: stay near the course, keep the target speed, keep clear of the obstacles. The plan moves toward the cheap samples, each weighted by exp(-cost / λ); its first command is applied and the plan shifts one step. It needs no derivatives, so a cost can be as blunt as "hitting an obstacle costs 10,000". The steering angle is part of the car's state and MPPI samples how fast it changes, so the wheel turns smoothly. Grey: sampled trajectories. Green: the plan. Blue: the path driven. Red circles: obstacles.
+**How it works:** Every 0.1 s MPPI tries 300 random variations of its planned acceleration and steering sequence, simulates the car 2.5 s ahead with each one, and scores the trajectories: stay near the course, keep the target speed along the course (raw speed would reward circling at full speed), keep clear of the obstacles. The plan moves toward the cheap samples, each weighted by exp(-cost / λ); its first command is applied and the plan shifts one step. It needs no derivatives, so a cost can be as blunt as "hitting an obstacle costs 10,000". The steering angle is part of the car's state and MPPI samples how fast it changes, so the wheel turns smoothly. Grey: sampled trajectories. Green: the plan. Blue: the path driven. Red circles: obstacles.
 
 - [sample code](PathTracking/mppi_control/mppi_control.py)
 

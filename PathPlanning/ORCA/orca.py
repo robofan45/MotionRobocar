@@ -110,8 +110,8 @@ def solve_on_line(lines: list[Line], k: int, radius: float,
     |v| <= radius: the point closest to target or, in direction_mode, the
     point furthest along the direction target. None if there is none."""
     point, direction = lines[k]
-    dot = point @ direction
-    discriminant = dot ** 2 + radius ** 2 - point @ point
+    dot = float(point @ direction)
+    discriminant = dot ** 2 + radius ** 2 - float(point @ point)
     if discriminant < 0.0:
         return None  # the speed limit circle misses this line
     # the part of the line inside the speed limit circle: t_left..t_right
@@ -134,7 +134,7 @@ def solve_on_line(lines: list[Line], k: int, radius: float,
     if direction_mode:
         t = t_right if target @ direction > 0.0 else t_left
     else:
-        t = min(max(direction @ (target - point), t_left), t_right)
+        t = min(max(float(direction @ (target - point)), t_left), t_right)
     return point + t * direction
 
 

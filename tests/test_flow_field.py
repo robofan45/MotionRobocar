@@ -95,5 +95,29 @@ def test_following_the_vectors_from_the_start_reaches_the_goal(flow):
     assert cost == flow.integration_field[path[0]]
 
 
+def test_animated_walk_ends_at_the_goal(monkeypatch):
+    """With the animation on, the walk used to plot the goal's (None, None)
+    vector, and matplotlib raised a ValueError."""
+    import matplotlib.pyplot as plt
+    walked = []
+    real_plot = plt.plot
+
+    def recording_plot(*args, **kwargs):
+        if args[2:] == ("b*",):
+            walked.append(args[:2])
+        return real_plot(*args, **kwargs)
+
+    monkeypatch.setattr(plt, "plot", recording_plot)
+    monkeypatch.setattr(plt, "pause", lambda *args, **kwargs: None)
+    monkeypatch.setattr(plt, "show", lambda *args, **kwargs: None)
+    monkeypatch.setattr(flow_field, "show_animation", True)
+    try:
+        flow = flow_field.main()
+    finally:
+        plt.close("all")
+    assert walked[0] == tuple(flow.start_pt)
+    assert walked[-1] == tuple(flow.goal_pt)
+
+
 if __name__ == '__main__':
     conftest.run_this_test(__file__)
