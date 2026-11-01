@@ -5,7 +5,7 @@
 # SPHINXOPTS with -W means turn warnings into errors to fail the build when warnings are present.
 SPHINXOPTS    = -W
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = MotionRobocar
+SPHINXPROJ    = PythonRoboticsProjects
 SOURCEDIR     = .
 BUILDDIR      = _build
 

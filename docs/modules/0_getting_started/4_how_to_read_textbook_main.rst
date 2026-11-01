@@ -4,7 +4,7 @@ How to read this textbook
 --------------------------
 
 This document is structured to help you learn the fundamental concepts
-behind each sample code in MotionRobocar.
+behind each sample code in Python Robotics Projects.
 
 If you already have some knowledge of robotics technologies, you can start
 by reading any document that interests you.

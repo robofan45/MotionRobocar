@@ -1,9 +1,9 @@
-.. _`What is MotionRobocar?`:
+.. _`What is Python Robotics Projects?`:
 
-What is MotionRobocar?
-------------------------
+What is Python Robotics Projects?
+---------------------------------
 
-This is an Open Source Software (OSS) project: MotionRobocar, which is a Python code collection of robotics algorithms.
+This is an Open Source Software (OSS) project: Python Robotics Projects, which is a Python code collection of robotics algorithms.
 The code is released under the MIT license.
 
 This project has three main philosophies below:
@@ -23,16 +23,16 @@ don’t need to be re-implemented.
 Having the core Python packages allows the user to focus on the algorithms,
 rather than the implementations.
 
-MotionRobocar provides not only the code but also intuitive animations that
+Python Robotics Projects provides not only the code but also intuitive animations that
 visually demonstrate the process and behavior of each algorithm over time.
 
 The animations are drawn with the `Matplotlib`_ library when you run each sample code.
 
-MotionRobocar also provides a textbook that explains the basic ideas of each algorithm.
-The MotionRobocar textbook allows you to learn fundamental algorithms used in
+Python Robotics Projects also provides a textbook that explains the basic ideas of each algorithm.
+The Python Robotics Projects textbook allows you to learn fundamental algorithms used in
 robotics with minimal mathematical formulas and textual explanations,
-based on MotionRobocar’ sample codes and animations.
-The contents of this document, like the code, are managed in the MotionRobocar
+based on Python Robotics Projects’ sample codes and animations.
+The contents of this document, like the code, are managed in the Python Robotics Projects
 repository and converted into HTML documents using `Sphinx`_,
 which is a Python-based documentation builder.
 Please refer to this section ":ref:`How to read this textbook`" for information on
@@ -57,7 +57,7 @@ These algorithms are implemented and explained in the textbook in this project.
 Philosophy 3. Minimum dependency.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each sample code of MotionRobocar is written in Python3 and only depends on
+Each sample code of Python Robotics Projects is written in Python3 and only depends on
 some standard modules for readability and ease to setup and use.
 
 
@@ -66,7 +66,7 @@ some standard modules for readability and ease to setup and use.
 Requirements
 ============
 
-MotionRobocar depends only on the following five libraries,
+Python Robotics Projects depends only on the following five libraries,
 including Python itself, to run each sample code.
 
 -  `Python 3.12.x`_ (for Python runtime)
