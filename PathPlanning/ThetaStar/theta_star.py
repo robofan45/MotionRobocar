@@ -59,6 +59,7 @@ class ThetaStarPlanner:
         output:
             rx: x position list of the final path
             ry: y position list of the final path
+            (both lists are empty when the goal cannot be reached)
         """
 
         start_node = self.Node(self.calc_xy_index(sx, self.min_x),
@@ -68,6 +69,7 @@ class ThetaStarPlanner:
 
         open_set, closed_set = dict(), dict()
         open_set[self.calc_grid_index(start_node)] = start_node
+        goal_found = False
 
         while True:
             if len(open_set) == 0:
@@ -119,6 +121,7 @@ class ThetaStarPlanner:
                 print("Find goal")
                 goal_node.parent_index = current.parent_index
                 goal_node.cost = current.cost
+                goal_found = True
                 break
 
             # Remove the item from the open set
@@ -155,6 +158,9 @@ class ThetaStarPlanner:
                         # This path is the best until now. record it
                         open_set[n_id] = node 
 
+
+        if not goal_found:
+            return [], []
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
 

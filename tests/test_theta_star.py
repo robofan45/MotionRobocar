@@ -119,9 +119,6 @@ def test_without_theta_star_it_finds_shortest_grid_paths(seed, monkeypatch):
     chk.check_planner(planner, start, goal)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="returns a path made of the goal alone instead of "
-                          "an empty path when the goal cannot be reached")
 def test_unreachable_goal_returns_empty_path():
     ox, oy = chk.enclosed_goal_obstacles()
     planner = m.ThetaStarPlanner(ox, oy, 1.0, 0.5)
