@@ -85,12 +85,6 @@ def test_sampled_terminal_states():
                                         np.linspace(9.0, 11.0, 5)])
 
 
-@pytest.mark.xfail(
-    strict=True, raises=AssertionError,
-    reason="calc_biased_polar_states() returns nxy - 1 positions (the last "
-           "one would need a bin with ii / ns >= 1), and its weights sum to "
-           "0.94 because they are normalised with ns instead of ns - 1 bins, "
-           "so the sampled angles stop well short of a_max")
 def test_biased_terminal_states_cover_the_angle_range():
     nxy, nh, ns = 30, 2, 100
     a_min, a_max = np.deg2rad(-45.0), np.deg2rad(45.0)

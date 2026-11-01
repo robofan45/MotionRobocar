@@ -128,16 +128,17 @@ def calc_biased_polar_states(goal_angle, ns, nxy, nh, d, a_min, a_max, p_min, p_
     cnav_sum = sum(cnav)
     cnav_max = max(cnav)
 
-    # normalize
-    cnav = [(cnav_max - cnav[i]) / (cnav_max * ns - cnav_sum)
+    # normalize over the ns - 1 bins, so the weights sum to 1
+    cnav = [(cnav_max - cnav[i]) / (cnav_max * (ns - 1) - cnav_sum)
             for i in range(ns - 1)]
 
     csumnav = np.cumsum(cnav)
     di = []
     li = 0
     for i in range(nxy):
+        # bins are 0 to ns - 2, so the last position takes the last bin
         for ii in range(li, ns - 1):
-            if ii / ns >= i / (nxy - 1):
+            if ii / (ns - 2) >= i / (nxy - 1):
                 di.append(csumnav[ii])
                 li = ii - 1
                 break
