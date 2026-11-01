@@ -3,10 +3,10 @@
 Introduction
 ============
 
-MotionRobocar is built on two topics: "Python" and "Robotics".
+Python Robotics Projects is built on two topics: "Python" and "Robotics".
 Therefore, I will first explain these two topics, Robotics and Python.
 After that, I will provide an overview of the robotics technologies
-covered in MotionRobocar.
+covered in Python Robotics Projects.
 
 .. toctree::
    :maxdepth: 2

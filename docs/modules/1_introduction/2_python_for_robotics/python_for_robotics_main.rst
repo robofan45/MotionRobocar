@@ -1,8 +1,8 @@
 Python for Robotics
 ----------------------
 
-A programming language, Python is used for this `MotionRobocar` project
-to achieve the purposes of this project described in the :ref:`What is MotionRobocar?`.
+A programming language, Python is used for this `Python Robotics Projects` project
+to achieve the purposes of this project described in the :ref:`What is Python Robotics Projects?`.
 
 This section explains the Python itself and features for science computing and robotics.
 

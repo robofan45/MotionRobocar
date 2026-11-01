@@ -1,16 +1,18 @@
-.. MotionRobocar documentation master file, created by
+.. Python Robotics Projects documentation master file, created by
    sphinx-quickstart on Sat Sep 15 13:15:55 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to MotionRobocar's documentation!
-==========================================
+Welcome to the Python Robotics Projects documentation!
+======================================================
 
-"MotionRobocar" is a Python code collection and textbook
+"Python Robotics Projects" is a Python code collection and textbook
 (this document) for robotics algorithms.
-It is owned and maintained by Mahim Trivedi.
+It is owned and maintained by Mahim Trivedi, and based on
+`PythonRobotics <https://github.com/AtsushiSakai/PythonRobotics>`_
+by Atsushi Sakai and contributors.
 
-See this section (:ref:`What is MotionRobocar?`) for more details of this project.
+See this section (:ref:`What is Python Robotics Projects?`) for more details of this project.
 
 
 ----------------------------------

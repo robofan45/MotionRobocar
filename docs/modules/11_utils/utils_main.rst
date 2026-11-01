@@ -3,7 +3,7 @@
 Utilities
 ==========
 
-Common utilities for MotionRobocar.
+Common utilities for Python Robotics Projects.
 
 .. toctree::
    :maxdepth: 2

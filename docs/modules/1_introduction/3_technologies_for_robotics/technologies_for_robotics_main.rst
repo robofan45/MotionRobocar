@@ -3,7 +3,7 @@ Technologies for Robotics
 
 The field of robotics needs wide areas of technologies such as mechanical engineering,
 electrical engineering, computer science, and artificial intelligence (AI).
-This project, `MotionRobocar`, only focuses on computer science and artificial intelligence.
+This project, `Python Robotics Projects`, only focuses on computer science and artificial intelligence.
 
 The technologies for robotics are categorized as following 3 categories:
 

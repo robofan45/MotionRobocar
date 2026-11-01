@@ -3,7 +3,7 @@
 Internal Sensors for Robots
 ============================
 
-This project, `MotionRobocar`, focuses on algorithms, so hardware is not included. However, having basic knowledge of hardware in robotics is also important for understanding algorithms. Therefore, we will provide an overview.
+This project, `Python Robotics Projects`, focuses on algorithms, so hardware is not included. However, having basic knowledge of hardware in robotics is also important for understanding algorithms. Therefore, we will provide an overview.
 
 Introduction
 -------------

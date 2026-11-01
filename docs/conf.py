@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'MotionRobocar'
+project = 'Python Robotics Projects'
 copyright = '2026, Mahim Trivedi; 2018-now, Atsushi Sakai'
 author = 'Mahim Trivedi'
 
@@ -103,7 +103,7 @@ html_theme_options = {
 #  * https://github.com/readthedocs/sphinx_rtd_theme/issues/529
 html_context = {
     'display_github': False,
-    'github_repo': 'MotionRobocar',
+    'github_repo': 'Python-Robotics-Projects',
     'github_version': 'master',
     "conf_py_path": "/docs/",
     "source_suffix": source_suffix,
@@ -130,7 +130,7 @@ html_css_files = ['custom.css']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'MotionRobocardoc'
+htmlhelp_basename = 'PythonRoboticsProjectsdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -157,7 +157,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'MotionRobocar.tex', 'MotionRobocar Documentation',
+    (master_doc, 'PythonRoboticsProjects.tex', 'Python Robotics Projects Documentation',
      author, 'manual'),
 ]
 
@@ -167,7 +167,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'motionrobocar', 'MotionRobocar Documentation',
+    (master_doc, 'pythonroboticsprojects', 'Python Robotics Projects Documentation',
      [author], 1)
 ]
 
@@ -178,8 +178,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'MotionRobocar', 'MotionRobocar Documentation',
-     author, 'MotionRobocar', 'Robotics algorithms in Python.',
+    (master_doc, 'PythonRoboticsProjects', 'Python Robotics Projects Documentation',
+     author, 'PythonRoboticsProjects', 'Robotics algorithms in Python.',
      'Miscellaneous'),
 ]
 
@@ -210,7 +210,7 @@ def linkcode_resolve(domain, info):
 
     try:
         srcfile = inspect.getsourcefile(obj)
-        srcfile = get_relative_path_from_parent(srcfile, "MotionRobocar")
+        srcfile = get_relative_path_from_parent(srcfile, "Python-Robotics-Projects")
         lineno = inspect.getsourcelines(obj)[1]
     except Exception:
         return None
