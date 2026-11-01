@@ -40,10 +40,6 @@ def test_1(monkeypatch):
     assert v[-1] < 0.65  # observed 0.32 m/s (profile ends at 1 km/h)
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True, reason=(
-    "calc_speed_profile's speed-down loop starts at i=0 and "
-    "speed_profile[-0] is the first point, so the start of the course gets "
-    "the 1 km/h stopping speed"))
 def test_speed_profile_slows_down_only_at_the_end():
     cyaw = [0.0] * 100  # straight course
     speed_profile = m.calc_speed_profile(cyaw, TARGET_SPEED)

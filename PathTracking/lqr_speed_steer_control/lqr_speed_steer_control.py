@@ -256,8 +256,8 @@ def calc_speed_profile(cyaw, target_speed):
         if switch:
             speed_profile[i] = 0.0
 
-    # speed down
-    for i in range(40):
+    # speed down near the goal (from i = 1: speed_profile[-0] is the start)
+    for i in range(1, 40):
         speed_profile[-i] = target_speed / (50 - i)
         if speed_profile[-i] <= 1.0 / 3.6:
             speed_profile[-i] = 1.0 / 3.6
