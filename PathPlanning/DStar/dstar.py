@@ -186,6 +186,8 @@ class Dstar:
                 continue
             tmp = tmp.parent
         tmp.set_state("e")
+        rx.append(tmp.x)
+        ry.append(tmp.y)
 
         return rx, ry
 
