@@ -54,14 +54,7 @@ def test_path_never_enters_an_obstacle(planners, name):
     assert not obstacles & set(path_of(bug))
 
 
-@pytest.mark.parametrize("name", [
-    "bug0",
-    pytest.param("bug1", marks=pytest.mark.xfail(
-        strict=True, raises=AssertionError,
-        reason="erasing the first lap around an obstacle also erases the "
-               "point where the obstacle was hit, so the path cuts that "
-               "corner (and jumps two cells at the first obstacle)")),
-    "bug2"])
+@pytest.mark.parametrize("name", NAMES)
 def test_path_follows_the_bug_rules(planners, name):
     bug = planners[name]
     obstacles = set(zip(bug.obs_x, bug.obs_y))
