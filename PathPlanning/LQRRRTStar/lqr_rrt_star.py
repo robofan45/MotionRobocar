@@ -222,7 +222,8 @@ def main(maxIter=200):
 
     lqr_rrt_star = LQRRRTStar(start, goal,
                               obstacleList,
-                              [-2.0, 15.0])
+                              [-2.0, 15.0],
+                              max_iter=maxIter)
     path = lqr_rrt_star.planning(animation=show_animation)
 
     # Draw final path

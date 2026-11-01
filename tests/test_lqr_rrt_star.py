@@ -61,10 +61,6 @@ def test_path_trajectories_start_at_their_parent(demo):
         node = node.parent
 
 
-@pytest.mark.xfail(
-    strict=True, raises=AssertionError,
-    reason="main() ignores its maxIter argument and always plans with the "
-           "default max_iter=200")
 def test_main_passes_max_iter_to_the_planner():
     max_iters = []
 
