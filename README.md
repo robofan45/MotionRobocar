@@ -2,8 +2,6 @@
 
 Python codes and [textbook](docs/index_main.rst) for robotics algorithm.
 
-Based on [PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics) by Atsushi Sakai and contributors.
-
 Owned and maintained by **Mahim Trivedi**.
 
 
